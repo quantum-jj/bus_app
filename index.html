@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Buses">
+<meta name="theme-color" content="#000000">
+<title>Bus Checker</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQnVzIENoZWNrZXIiLCJzaG9ydF9uYW1lIjoiQnVzZXMiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzAwMDAwMCIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCJ9">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg:#000; --bg-card:#1c1c1e; --bg-card-hover:#2c2c2e;
+  --text-primary:#fff; --text-secondary:#8e8e93; --text-tertiary:#636366;
+  --separator:rgba(84,84,88,0.35); --blue:#0a84ff; --green:#30d158;
+  --yellow:#ffd60a; --red:#ff453a; --orange:#ff9f0a;
+  --bus-red:#e63329;
+  --safe-top:env(safe-area-inset-top,20px); --safe-bottom:env(safe-area-inset-bottom,0px); --radius:13px;
+}
+body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',system-ui,sans-serif; background:var(--bg); color:var(--text-primary); min-height:100dvh; -webkit-font-smoothing:antialiased; overscroll-behavior:none; }
+
+/* ── Navbar ── */
+.navbar { position:sticky; top:0; z-index:100; padding:var(--safe-top) 16px 12px; background:rgba(0,0,0,0.72); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:0.5px solid var(--separator); }
+.navbar h1 { font-size:34px; font-weight:700; letter-spacing:-0.4px; }
+.navbar .subtitle { font-size:15px; color:var(--text-secondary); margin-top:2px; }
+.back-btn { display:none; align-items:center; gap:4px; background:none; border:none; color:var(--blue); font-size:17px; font-family:inherit; cursor:pointer; padding:4px 0; margin-bottom:4px; }
+.back-btn svg { width:20px; height:20px; }
+.back-btn.visible { display:flex; }
+.settings-btn { position:absolute; right:16px; top:var(--safe-top); background:none; border:none; color:var(--blue); font-size:22px; cursor:pointer; padding:8px; line-height:1; }
+
+/* ── Content ── */
+.content { padding:16px 16px calc(16px + var(--safe-bottom)); max-width:500px; margin:0 auto; }
+.section-label { font-size:13px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.02em; padding:0 16px 8px; }
+
+/* ── Weather ── */
+.weather-widget { background:var(--bg-card); border-radius:var(--radius); padding:16px; margin-bottom:12px; cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
+.weather-widget:active { background:var(--bg-card-hover); }
+.weather-top { display:flex; align-items:center; justify-content:space-between; }
+.weather-temp-group { display:flex; align-items:baseline; gap:6px; }
+.weather-icon { font-size:36px; line-height:1; }
+.weather-temp { font-size:42px; font-weight:300; letter-spacing:-1px; }
+.weather-desc { font-size:15px; color:var(--text-secondary); font-weight:500; }
+.weather-details { display:flex; flex-wrap:wrap; gap:12px 20px; margin-top:10px; font-size:14px; color:var(--text-secondary); }
+.weather-details span { display:flex; align-items:center; gap:4px; }
+.weather-loading { text-align:center; padding:12px 0; font-size:14px; color:var(--text-tertiary); }
+.weather-location { font-size:13px; color:var(--text-tertiary); margin-top:8px; }
+.aqi-badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:12px; font-weight:600; }
+.aqi-good { background:rgba(48,209,88,0.15); color:var(--green); }
+.aqi-fair { background:rgba(255,214,10,0.15); color:var(--yellow); }
+.aqi-moderate { background:rgba(255,159,10,0.15); color:var(--orange); }
+.aqi-poor { background:rgba(255,69,58,0.15); color:var(--red); }
+.aqi-very-poor { background:rgba(255,69,58,0.25); color:var(--red); }
+.weather-alert { background:rgba(255,69,58,0.12); border:1px solid rgba(255,69,58,0.3); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px; display:none; }
+.weather-alert .alert-title { font-size:14px; font-weight:600; color:var(--red); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.weather-alert .alert-body { font-size:13px; color:var(--text-secondary); line-height:1.4; }
+
+/* ── Screens ── */
+.screen { display:none; }
+.screen.active { display:block; animation:fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── Favourite cards ── */
+.fav-card { background:var(--bg-card); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
+.fav-card.tappable { cursor:pointer; }
+.fav-card.tappable:active { background:var(--bg-card-hover); }
+.fav-card-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.bus-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:17px; font-weight:800; padding:5px 10px; border-radius:6px; min-width:52px; letter-spacing:-0.5px; flex-shrink:0; font-variant-numeric:tabular-nums; line-height:1.2; }
+.fav-info { flex:1; min-width:0; }
+.fav-label { font-size:17px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fav-towards { font-size:13px; color:var(--text-secondary); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fav-refresh-btn { background:none; border:none; color:var(--text-tertiary); font-size:20px; cursor:pointer; padding:4px 6px; flex-shrink:0; line-height:1; }
+.fav-refresh-btn:active { color:var(--blue); }
+.arrivals-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.arrival-chip { display:inline-flex; align-items:center; justify-content:center; padding:5px 13px; border-radius:8px; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums; }
+.arrival-due { background:rgba(255,69,58,0.15); color:var(--red); }
+.arrival-soon { background:rgba(255,214,10,0.15); color:var(--yellow); }
+.arrival-good { background:rgba(48,209,88,0.15); color:var(--green); }
+.arrivals-loading { font-size:14px; color:var(--text-tertiary); display:flex; align-items:center; gap:8px; }
+.arrivals-empty { font-size:14px; color:var(--text-tertiary); font-style:italic; }
+.arrivals-error { font-size:14px; color:var(--red); }
+.fav-timestamp { font-size:12px; color:var(--text-tertiary); margin-top:8px; text-align:right; }
+.card-spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--text-tertiary); border-top-color:var(--text-primary); border-radius:50%; animation:spin 0.7s linear infinite; }
+
+/* ── Empty state ── */
+.empty-state { text-align:center; padding:56px 20px; }
+.empty-icon { font-size:56px; margin-bottom:16px; }
+.empty-title { font-size:22px; font-weight:600; margin-bottom:8px; }
+.empty-body { font-size:15px; color:var(--text-secondary); line-height:1.5; margin-bottom:28px; }
+.add-first-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:var(--blue); color:white; border:none; border-radius:14px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
+.add-first-btn:active { opacity:0.8; }
+
+/* ── Add route row ── */
+.add-route-row { display:flex; align-items:center; gap:14px; padding:13px 16px; background:var(--bg-card); border-radius:var(--radius); margin-bottom:32px; cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
+.add-route-row:active { background:var(--bg-card-hover); }
+.add-route-row .add-icon { width:36px; height:36px; border-radius:8px; background:rgba(10,132,255,0.15); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.add-route-row .add-label { flex:1; font-size:17px; color:var(--blue); }
+.add-route-row .chevron { color:var(--text-tertiary); font-size:20px; }
+
+/* ── Settings ── */
+.settings-field { margin-bottom:24px; }
+.settings-input { width:100%; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
+.settings-input:focus { border-color:var(--blue); }
+.settings-input::placeholder { color:var(--text-tertiary); }
+.settings-input:disabled { color:var(--text-tertiary); opacity:0.7; }
+.settings-select { width:100%; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; -webkit-appearance:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238e8e93'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+.settings-note { font-size:13px; color:var(--text-tertiary); padding:8px 4px 0; line-height:1.4; }
+.settings-note a { color:var(--blue); text-decoration:none; }
+.save-btn { width:100%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
+.save-btn:active { opacity:0.8; }
+.save-btn:disabled { opacity:0.5; pointer-events:none; }
+.danger-btn { width:100%; padding:14px; background:transparent; border:1px solid var(--red); border-radius:12px; color:var(--red); font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; margin-top:8px; }
+.danger-btn:active { opacity:0.7; }
+.version-label { text-align:center; font-size:12px; color:var(--text-tertiary); padding:32px 0 8px; }
+.settings-gap { height:24px; }
+
+/* ── Favourites in settings ── */
+.fav-setting-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); }
+.fav-setting-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.fav-setting-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
+.fav-setting-item:only-child { border-radius:var(--radius); }
+.fav-setting-badge { background:var(--bus-red); color:#fff; font-size:13px; font-weight:700; padding:3px 8px; border-radius:5px; min-width:38px; text-align:center; flex-shrink:0; }
+.fav-setting-info { flex:1; min-width:0; }
+.fav-setting-name { font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fav-setting-sub { font-size:12px; color:var(--text-tertiary); margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fav-setting-delete { background:none; border:none; font-size:20px; cursor:pointer; padding:4px 6px; color:var(--text-tertiary); flex-shrink:0; }
+.fav-setting-delete:active { opacity:0.5; }
+.add-fav-btn { width:100%; padding:10px; background:var(--bg-card); border:1px dashed var(--separator); border-radius:var(--radius); color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-top:8px; }
+.add-fav-btn:active { opacity:0.7; }
+
+/* ── Modal ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal-sheet { width:100%; max-width:500px; max-height:88vh; background:#1c1c1e; border-radius:16px 16px 0 0; display:flex; flex-direction:column; padding-bottom:var(--safe-bottom); }
+.modal-header { padding:16px; border-bottom:0.5px solid var(--separator); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.modal-header h3 { font-size:17px; font-weight:600; }
+.modal-close { background:none; border:none; color:var(--blue); font-size:17px; font-family:inherit; cursor:pointer; }
+.modal-search { padding:8px 16px 4px; flex-shrink:0; }
+.modal-search input { width:100%; padding:10px 12px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
+.modal-search input::placeholder { color:var(--text-tertiary); }
+.modal-search input:focus { border-color:var(--blue); }
+.modal-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.modal-status { text-align:center; padding:40px 20px; color:var(--text-secondary); font-size:15px; line-height:1.5; }
+.modal-loading { display:flex; align-items:center; justify-content:center; gap:10px; padding:32px 20px; color:var(--text-secondary); font-size:15px; }
+.modal-spinner { width:20px; height:20px; border:2px solid var(--text-tertiary); border-top-color:var(--text-primary); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
+.modal-item { padding:13px 16px; border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.1s; -webkit-user-select:none; user-select:none; }
+.modal-item:last-child { border-bottom:none; }
+.modal-item:active { background:var(--bg-card-hover); }
+.modal-item .item-main { font-size:15px; font-weight:500; }
+.modal-item .item-sub { font-size:13px; color:var(--text-secondary); margin-top:2px; }
+.modal-stop-header { padding:12px 16px 4px; font-size:13px; color:var(--text-secondary); border-bottom:0.5px solid var(--separator); }
+
+/* ── Route line grid ── */
+.route-line-grid { display:flex; flex-wrap:wrap; gap:10px; padding:16px; }
+.route-line-btn { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:17px; font-weight:800; padding:10px 16px; border-radius:8px; min-width:64px; border:none; font-family:inherit; cursor:pointer; letter-spacing:-0.5px; transition:opacity 0.15s; -webkit-user-select:none; user-select:none; }
+.route-line-btn:active { opacity:0.7; }
+
+/* ── Label editor ── */
+.label-editor { padding:16px; }
+.label-editor p { font-size:14px; color:var(--text-secondary); margin-bottom:12px; line-height:1.4; }
+.label-editor input { width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; margin-bottom:12px; }
+.label-editor input:focus { border-color:var(--blue); }
+.label-editor button { width:100%; padding:13px; background:var(--blue); color:white; border:none; border-radius:12px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; }
+.label-editor button:active { opacity:0.8; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <button class="back-btn" id="backBtn" onclick="goBack()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    Back
+  </button>
+  <h1 id="navTitle">🚌 Buses</h1>
+  <div class="subtitle" id="navSubtitle">London TfL</div>
+  <button class="settings-btn" id="settingsBtn" onclick="showSettings()">⚙️</button>
+</div>
+
+<div class="content">
+  <div class="screen active" id="homeScreen">
+    <div class="section-label">Weather</div>
+    <div class="weather-alert" id="weatherAlert">
+      <div class="alert-title">⚠️ <span id="alertTitle"></span></div>
+      <div class="alert-body" id="alertBody"></div>
+    </div>
+    <div class="weather-widget" id="weatherWidget" onclick="window.open('https://www.bbc.com/weather/2643743','_blank')">
+      <div class="weather-loading" id="weatherLoading">Loading weather…</div>
+      <div id="weatherContent" style="display:none">
+        <div class="weather-top">
+          <div>
+            <div class="weather-temp-group">
+              <span class="weather-icon" id="wIcon"></span>
+              <span class="weather-temp" id="wTemp"></span>
+            </div>
+            <div class="weather-desc" id="wDesc"></div>
+          </div>
+        </div>
+        <div class="weather-details">
+          <span>🌡️ Feels <span id="wFeels"></span></span>
+          <span>💨 <span id="wWind"></span></span>
+          <span>💧 <span id="wHumidity"></span></span>
+          <span id="wAqiContainer" style="display:none">🫁 <span id="wAqi" class="aqi-badge"></span></span>
+        </div>
+        <div class="weather-location" id="wLocation">📍 Hoxton · Tap for forecast</div>
+      </div>
+    </div>
+
+    <div class="section-label" id="routesLabel" style="display:none">Your Routes</div>
+    <div id="routesList"></div>
+  </div>
+
+  <div class="screen" id="settingsScreen">
+    <div id="settingsContainer"></div>
+  </div>
+</div>
+
+<!-- Add route modal (3 steps: search stop → pick route → set label) -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add a Route</h3>
+      <button class="modal-close" onclick="closeAddModal()">Cancel</button>
+    </div>
+    <div class="modal-search" id="modalSearchArea">
+      <input type="text" id="modalSearchInput" placeholder="e.g. Hackney Road, Old Street…" autocomplete="off">
+    </div>
+    <div class="modal-list" id="modalList">
+      <div class="modal-status">🔍 Start typing to search for a bus stop</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const APP_VERSION = 'v1.0.0';
+
+// ─── DEFAULTS ───────────────────────────────────────────────
+const DEFAULTS = {
+  favourites: [],
+  weatherLocation: 'hoxton',
+  tflKey: '',
+};
+
+const WEATHER_LOCATIONS = [
+  { id:'hoxton',        name:'Hoxton',        lat:51.531, lon:-0.083 },
+  { id:'shoreditch',    name:'Shoreditch',    lat:51.526, lon:-0.077 },
+  { id:'soho',          name:'Soho',          lat:51.513, lon:-0.136 },
+  { id:'west-end',      name:'West End',      lat:51.511, lon:-0.128 },
+  { id:'kings-cross',   name:"King's Cross",  lat:51.531, lon:-0.124 },
+  { id:'angel',         name:'Angel',         lat:51.532, lon:-0.106 },
+  { id:'clerkenwell',   name:'Clerkenwell',   lat:51.523, lon:-0.105 },
+  { id:'bloomsbury',    name:'Bloomsbury',    lat:51.523, lon:-0.128 },
+  { id:'covent-garden', name:'Covent Garden', lat:51.512, lon:-0.123 },
+  { id:'bankside',      name:'Bankside',      lat:51.507, lon:-0.098 },
+  { id:'canary-wharf',  name:'Canary Wharf',  lat:51.505, lon:-0.024 },
+  { id:'greenwich',     name:'Greenwich',     lat:51.477, lon:-0.001 },
+  { id:'hackney',       name:'Hackney',       lat:51.545, lon:-0.055 },
+  { id:'islington',     name:'Islington',     lat:51.536, lon:-0.103 },
+  { id:'camden',        name:'Camden',        lat:51.539, lon:-0.143 },
+  { id:'southwark',     name:'Southwark',     lat:51.502, lon:-0.104 },
+  { id:'lambeth',       name:'Lambeth',       lat:51.490, lon:-0.117 },
+  { id:'chelsea',       name:'Chelsea',       lat:51.487, lon:-0.168 },
+  { id:'kensington',    name:'Kensington',    lat:51.501, lon:-0.192 },
+  { id:'westminster',   name:'Westminster',   lat:51.499, lon:-0.135 },
+];
+
+const WMO = {
+  0:['☀️','Clear sky'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],
+  45:['🌫️','Fog'],48:['🌫️','Rime fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌧️','Heavy drizzle'],
+  61:['🌧️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],66:['🌧️','Freezing rain'],67:['🌧️','Heavy freezing rain'],
+  71:['🌨️','Light snow'],73:['🌨️','Snow'],75:['🌨️','Heavy snow'],77:['🌨️','Snow grains'],
+  80:['🌦️','Light showers'],81:['🌧️','Showers'],82:['🌧️','Heavy showers'],85:['🌨️','Snow showers'],86:['🌨️','Heavy snow showers'],
+  95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm + hail'],99:['⛈️','Severe thunderstorm'],
+};
+
+// ─── STATE ──────────────────────────────────────────────────
+let config = loadConfig();
+
+function loadConfig() {
+  try {
+    const raw = localStorage.getItem('bus_config_v1');
+    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+
+function saveConfig() {
+  try { localStorage.setItem('bus_config_v1', JSON.stringify(config)); } catch(e) {}
+}
+
+// ─── ARRIVALS CACHE ─────────────────────────────────────────
+let _arrivalsCache = {}; // stopId -> { data, ts }
+
+function invalidateStopCache(stopId) { delete _arrivalsCache[stopId]; }
+
+async function fetchArrivals(stopId) {
+  const now = Date.now();
+  if (_arrivalsCache[stopId] && (now - _arrivalsCache[stopId].ts) < 30000) {
+    return _arrivalsCache[stopId].data;
+  }
+  const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
+  const r = await fetch(`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}/Arrivals${key}`, {
+    mode: 'cors', cache: 'no-store', headers: { 'Accept': 'application/json' }
+  });
+  if (!r.ok) throw new Error(`TfL API error ${r.status}`);
+  const data = await r.json();
+  data.sort((a, b) => a.timeToStation - b.timeToStation);
+  _arrivalsCache[stopId] = { data, ts: now };
+  return data;
+}
+
+function getArrivalsForLine(arrivals, lineId) {
+  const lid = lineId.toLowerCase().trim();
+  return arrivals.filter(a => (a.lineId || '').toLowerCase() === lid).slice(0, 3);
+}
+
+function formatArrival(seconds) {
+  if (seconds < 30) return 'Due';
+  const mins = Math.round(seconds / 60);
+  return mins === 0 ? 'Due' : `${mins} min`;
+}
+
+function arrivalClass(seconds) {
+  if (seconds < 90) return 'arrival-due';
+  if (seconds < 360) return 'arrival-soon';
+  return 'arrival-good';
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────
+let navStack = ['homeScreen'];
+let refreshInterval = null;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('backBtn').classList.toggle('visible', id !== 'homeScreen');
+  document.getElementById('settingsBtn').style.display = id === 'homeScreen' ? '' : 'none';
+}
+
+function pushScreen(id) {
+  navStack.push(id);
+  showScreen(id);
+  clearInterval(refreshInterval);
+  refreshInterval = null;
+}
+
+function goBack() {
+  if (navStack.length > 1) navStack.pop();
+  const prev = navStack[navStack.length - 1];
+  showScreen(prev);
+  if (prev === 'homeScreen') {
+    document.getElementById('navTitle').textContent = '🚌 Buses';
+    document.getElementById('navSubtitle').textContent = 'London TfL';
+    renderHome();
+    loadAllCards();
+    startAutoRefresh();
+  }
+}
+
+// ─── WEATHER ────────────────────────────────────────────────
+async function loadWeather() {
+  try {
+    const loc = WEATHER_LOCATIONS.find(l => l.id === config.weatherLocation) || WEATHER_LOCATIONS[0];
+    const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m&wind_speed_unit=mph&timezone=Europe%2FLondon`;
+    const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lon}&current=european_aqi`;
+    const [wRes, aqiRes] = await Promise.all([fetch(wUrl), fetch(aqiUrl).catch(() => null)]);
+    const wd = await wRes.json();
+    const c = wd.current;
+    const [icon, desc] = WMO[c.weather_code] || ['🌡️', 'Unknown'];
+    document.getElementById('wIcon').textContent = icon;
+    document.getElementById('wTemp').textContent = `${Math.round(c.temperature_2m)}°`;
+    document.getElementById('wDesc').textContent = desc;
+    document.getElementById('wFeels').textContent = `${Math.round(c.apparent_temperature)}°`;
+    document.getElementById('wWind').textContent = `${Math.round(c.wind_speed_10m)} mph`;
+    document.getElementById('wHumidity').textContent = `${c.relative_humidity_2m}%`;
+    document.getElementById('wLocation').textContent = `📍 ${loc.name} · Tap for forecast`;
+    document.getElementById('weatherLoading').style.display = 'none';
+    document.getElementById('weatherContent').style.display = 'block';
+
+    if (aqiRes && aqiRes.ok) {
+      const aqiData = await aqiRes.json();
+      const aqi = aqiData.current?.european_aqi;
+      if (aqi != null) {
+        const el = document.getElementById('wAqi');
+        let label, cls;
+        if (aqi <= 20)      { label = 'Good';      cls = 'aqi-good'; }
+        else if (aqi <= 40) { label = 'Fair';      cls = 'aqi-fair'; }
+        else if (aqi <= 60) { label = 'Moderate';  cls = 'aqi-moderate'; }
+        else if (aqi <= 80) { label = 'Poor';      cls = 'aqi-poor'; }
+        else                { label = 'Very Poor'; cls = 'aqi-very-poor'; }
+        el.textContent = `AQI ${aqi} · ${label}`;
+        el.className = `aqi-badge ${cls}`;
+        document.getElementById('wAqiContainer').style.display = '';
+      }
+    }
+
+    const alertEl = document.getElementById('weatherAlert');
+    const alerts = [];
+    if (c.apparent_temperature < 0) alerts.push(`🥶 Feels like ${Math.round(c.apparent_temperature)}°C — wrap up warm`);
+    if (c.apparent_temperature > 32) alerts.push(`🔥 Feels like ${Math.round(c.apparent_temperature)}°C — stay hydrated`);
+    if ((c.wind_gusts_10m || c.wind_speed_10m) > 40) alerts.push(`🌬️ Wind gusts up to ${Math.round(c.wind_gusts_10m || c.wind_speed_10m)} mph`);
+    if ([65,67,82,95,96,99].includes(c.weather_code)) alerts.push(`${icon} ${desc} — check TfL service status`);
+    if (alerts.length) {
+      document.getElementById('alertTitle').textContent = 'Weather Warning';
+      document.getElementById('alertBody').textContent = alerts.join(' · ');
+      alertEl.style.display = 'block';
+    } else {
+      alertEl.style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('weatherLoading').textContent = 'Weather unavailable';
+  }
+}
+
+// ─── HOME / CARDS ────────────────────────────────────────────
+let _cardStates = {}; // favId -> { arrivals, error, ts } | null
+
+function renderHome() {
+  const list = document.getElementById('routesList');
+  const label = document.getElementById('routesLabel');
+  if (config.favourites.length === 0) {
+    label.style.display = 'none';
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🚌</div>
+        <div class="empty-title">No routes saved</div>
+        <div class="empty-body">Add your favourite bus routes to see live arrivals right here.</div>
+        <button class="add-first-btn" onclick="openAddModal()">＋ Add a Route</button>
+      </div>`;
+    return;
+  }
+  label.style.display = '';
+  let h = '';
+  for (const fav of config.favourites) {
+    h += buildCardHtml(fav);
+  }
+  h += `
+    <div class="add-route-row" onclick="openAddModal()">
+      <div class="add-icon">＋</div>
+      <div class="add-label">Add Another Route</div>
+      <div class="chevron">›</div>
+    </div>`;
+  list.innerHTML = h;
+}
+
+function buildCardHtml(fav) {
+  const state = _cardStates[fav.id];
+  let arrivalsHtml;
+  if (!state) {
+    arrivalsHtml = `<div class="arrivals-loading"><span class="card-spinner"></span> Loading…</div>`;
+  } else if (state.error) {
+    arrivalsHtml = `<div class="arrivals-error">⚠️ ${esc(state.error)}</div>`;
+  } else {
+    const lineArrivals = getArrivalsForLine(state.arrivals || [], fav.line);
+    if (lineArrivals.length === 0) {
+      arrivalsHtml = `<div class="arrivals-empty">No buses in the next 30 min</div>`;
+    } else {
+      const chips = lineArrivals.map(a =>
+        `<span class="arrival-chip ${arrivalClass(a.timeToStation)}">${formatArrival(a.timeToStation)}</span>`
+      ).join('');
+      arrivalsHtml = `<div class="arrivals-row">${chips}</div>`;
+    }
+  }
+  const ts = state?.ts ? `Updated ${new Date(state.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}` : '';
+  return `
+    <div class="fav-card" id="card-${esc(fav.id)}">
+      <div class="fav-card-header">
+        <span class="bus-badge">${esc(fav.line)}</span>
+        <div class="fav-info">
+          <div class="fav-label">${esc(fav.label || fav.stopName)}</div>
+          <div class="fav-towards">📍 ${esc(fav.stopName)} → ${esc(fav.towards || 'various destinations')}</div>
+        </div>
+        <button class="fav-refresh-btn" data-fav-id="${esc(fav.id)}" title="Refresh">↻</button>
+      </div>
+      ${arrivalsHtml}
+      ${ts ? `<div class="fav-timestamp">${ts}</div>` : ''}
+    </div>`;
+}
+
+function patchCard(favId) {
+  const fav = config.favourites.find(f => f.id === favId);
+  if (!fav) return;
+  const el = document.getElementById('card-' + favId);
+  if (!el) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = buildCardHtml(fav);
+  el.replaceWith(tmp.firstElementChild);
+}
+
+async function loadCard(fav) {
+  try {
+    const arrivals = await fetchArrivals(fav.stopId);
+    _cardStates[fav.id] = { arrivals, ts: Date.now() };
+  } catch(e) {
+    _cardStates[fav.id] = { error: "Couldn't load · tap ↻ to retry", ts: Date.now() };
+  }
+  patchCard(fav.id);
+}
+
+async function refreshCard(favId) {
+  const fav = config.favourites.find(f => f.id === favId);
+  if (!fav) return;
+  invalidateStopCache(fav.stopId);
+  delete _cardStates[favId];
+  patchCard(favId);
+  await loadCard(fav);
+}
+
+async function loadAllCards() {
+  if (config.favourites.length === 0) return;
+  await Promise.all(config.favourites.map(f => loadCard(f)));
+}
+
+function startAutoRefresh() {
+  clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => {
+    if (navStack[navStack.length - 1] !== 'homeScreen') return;
+    for (const fav of config.favourites) {
+      const state = _cardStates[fav.id];
+      if (!state || (Date.now() - state.ts) > 30000) {
+        invalidateStopCache(fav.stopId);
+        delete _cardStates[fav.id];
+        patchCard(fav.id);
+        loadCard(fav);
+      }
+    }
+  }, 15000);
+}
+
+// Delegate refresh button clicks
+document.getElementById('routesList').addEventListener('click', e => {
+  const btn = e.target.closest('.fav-refresh-btn');
+  if (btn) { e.stopPropagation(); refreshCard(btn.dataset.favId); }
+});
+
+// ─── ADD MODAL ──────────────────────────────────────────────
+let _searchTimeout = null;
+let _pendingStop = null;   // { id, name }
+let _pendingLine = null;   // string
+let _pendingTowards = null; // string
+
+function openAddModal() {
+  _pendingStop = null;
+  _pendingLine = null;
+  _pendingTowards = null;
+  document.getElementById('modalTitle').textContent = 'Add a Route';
+  document.getElementById('modalSearchArea').style.display = '';
+  const inp = document.getElementById('modalSearchInput');
+  inp.value = '';
+  document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Start typing to search for a bus stop</div>';
+  document.getElementById('addModal').classList.add('active');
+  setTimeout(() => inp.focus(), 250);
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('active');
+  clearTimeout(_searchTimeout);
+}
+
+document.getElementById('modalSearchInput').addEventListener('input', () => {
+  clearTimeout(_searchTimeout);
+  const q = document.getElementById('modalSearchInput').value.trim();
+  if (q.length < 2) {
+    document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Start typing to search for a bus stop</div>';
+    return;
+  }
+  document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Searching…</div>';
+  _searchTimeout = setTimeout(() => doStopSearch(q), 420);
+});
+
+async function doStopSearch(query) {
+  try {
+    const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
+    const r = await fetch(`https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(query)}?modes=bus${key}`, {
+      mode: 'cors', headers: { 'Accept': 'application/json' }
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    const matches = (data.matches || []).filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).slice(0, 25);
+    if (!matches.length) {
+      document.getElementById('modalList').innerHTML = '<div class="modal-status">No stops found — try a different search</div>';
+      return;
+    }
+    let h = '';
+    for (const stop of matches) {
+      const indicator = stop.indicator ? ` (${stop.indicator})` : '';
+      const towards = stop.towards ? stop.towards : '';
+      h += `<div class="modal-item" data-action="stop" data-stop-id="${attrEsc(stop.id)}" data-stop-name="${attrEsc(stop.name + indicator)}">
+        <div class="item-main">${esc(stop.name)}${esc(indicator)}</div>
+        ${towards ? `<div class="item-sub">→ ${esc(towards)}</div>` : ''}
+      </div>`;
+    }
+    document.getElementById('modalList').innerHTML = h;
+  } catch(e) {
+    document.getElementById('modalList').innerHTML = `<div class="modal-status">⚠️ Search failed: ${esc(e.message)}<br><br>Check your connection and try again.</div>`;
+  }
+}
+
+async function selectStop(stopId, stopName) {
+  _pendingStop = { id: stopId, name: stopName };
+  document.getElementById('modalTitle').textContent = 'Choose a route';
+  document.getElementById('modalSearchArea').style.display = 'none';
+  document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Loading routes at this stop…</div>';
+  try {
+    const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
+    const r = await fetch(`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}/Arrivals${key}`, {
+      mode: 'cors', headers: { 'Accept': 'application/json' }
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const arrivals = await r.json();
+    arrivals.sort((a, b) => a.timeToStation - b.timeToStation);
+
+    // Build map: lineName -> towards
+    const lineMap = {};
+    for (const a of arrivals) {
+      if (a.lineName && !lineMap[a.lineName]) {
+        lineMap[a.lineName] = a.towards || a.destinationName || '';
+      }
+    }
+
+    const lines = Object.keys(lineMap).sort((a, b) => {
+      const na = parseInt(a), nb = parseInt(b);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      return a.localeCompare(b);
+    });
+
+    if (!lines.length) {
+      document.getElementById('modalList').innerHTML = `<div class="modal-status">No buses arriving at this stop right now.<br><br>Try a different stop, or check back later.</div>`;
+      return;
+    }
+
+    let h = `<div class="modal-stop-header">📍 ${esc(stopName)}</div><div class="route-line-grid">`;
+    for (const line of lines) {
+      h += `<button class="route-line-btn" data-action="line" data-line="${attrEsc(line)}" data-towards="${attrEsc(lineMap[line])}">${esc(line)}</button>`;
+    }
+    h += '</div>';
+    document.getElementById('modalList').innerHTML = h;
+  } catch(e) {
+    document.getElementById('modalList').innerHTML = `<div class="modal-status">⚠️ Couldn't load routes: ${esc(e.message)}</div>`;
+  }
+}
+
+function selectLine(line, towards) {
+  if (!_pendingStop) return;
+  _pendingLine = line;
+  _pendingTowards = towards;
+  document.getElementById('modalTitle').textContent = 'Name this route';
+  document.getElementById('modalSearchArea').style.display = 'none';
+  const defaultLabel = `${line} from ${_pendingStop.name.split(' (')[0]}`;
+  document.getElementById('modalList').innerHTML = `
+    <div class="label-editor">
+      <p>Give this route a label so you can find it easily. You can change this anytime in settings.</p>
+      <input type="text" id="labelInput" value="${attrEsc(defaultLabel)}" placeholder="e.g. Home → City" maxlength="40">
+      <button onclick="saveFavourite()">Save Route</button>
+    </div>`;
+  setTimeout(() => {
+    const inp = document.getElementById('labelInput');
+    if (inp) { inp.focus(); inp.select(); }
+  }, 100);
+}
+
+function saveFavourite() {
+  if (!_pendingStop || !_pendingLine) return;
+  const labelEl = document.getElementById('labelInput');
+  const label = labelEl ? labelEl.value.trim() : '';
+  const fav = {
+    id: 'f' + Date.now() + Math.random().toString(36).slice(2),
+    stopId: _pendingStop.id,
+    stopName: _pendingStop.name,
+    line: _pendingLine,
+    towards: _pendingTowards,
+    label: label || `${_pendingLine} from ${_pendingStop.name.split(' (')[0]}`,
+  };
+  config.favourites.push(fav);
+  saveConfig();
+  closeAddModal();
+  renderHome();
+  loadCard(fav);
+}
+
+// Delegate modal list clicks
+document.getElementById('modalList').addEventListener('click', e => {
+  const stopEl = e.target.closest('[data-action="stop"]');
+  if (stopEl) { selectStop(stopEl.dataset.stopId, stopEl.dataset.stopName); return; }
+  const lineEl = e.target.closest('[data-action="line"]');
+  if (lineEl) { selectLine(lineEl.dataset.line, lineEl.dataset.towards); return; }
+});
+
+// Close modal on backdrop click
+document.getElementById('addModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeAddModal();
+});
+
+// ─── SETTINGS ───────────────────────────────────────────────
+function showSettings() {
+  document.getElementById('navTitle').textContent = '⚙️ Settings';
+  document.getElementById('navSubtitle').textContent = '';
+  renderSettings();
+  pushScreen('settingsScreen');
+}
+
+function renderSettings() {
+  const sc = document.getElementById('settingsContainer');
+  let h = '';
+
+  h += '<div class="section-label">Your Routes</div>';
+  if (config.favourites.length > 0) {
+    for (const fav of config.favourites) {
+      h += `
+        <div class="fav-setting-item">
+          <span class="fav-setting-badge">${esc(fav.line)}</span>
+          <div class="fav-setting-info">
+            <div class="fav-setting-name">${esc(fav.label || fav.stopName)}</div>
+            <div class="fav-setting-sub">📍 ${esc(fav.stopName)} → ${esc(fav.towards || 'various')}</div>
+          </div>
+          <button class="fav-setting-delete" data-del-id="${attrEsc(fav.id)}" title="Remove">✕</button>
+        </div>`;
+    }
+  } else {
+    h += '<div style="background:var(--bg-card);border-radius:var(--radius);padding:20px;text-align:center;font-size:14px;color:var(--text-tertiary)">No routes saved yet</div>';
+  }
+  h += `<button class="add-fav-btn" onclick="openAddModal()">＋ Add a Route</button>`;
+  h += '<div class="settings-gap"></div>';
+
+  h += '<div class="section-label">Weather Location</div><div class="settings-field">';
+  h += '<select class="settings-select" id="weatherLocSelect">';
+  for (const loc of WEATHER_LOCATIONS) {
+    h += `<option value="${attrEsc(loc.id)}" ${config.weatherLocation === loc.id ? 'selected' : ''}>${esc(loc.name)}</option>`;
+  }
+  h += '</select></div>';
+
+  h += '<div class="section-label">TfL API Key</div><div class="settings-field">';
+  h += `<input type="text" class="settings-input" id="tflKeyInput" placeholder="Paste your free TfL API key" value="${attrEsc(config.tflKey)}">`;
+  h += `<div class="settings-note">Free from <a href="https://api-portal.tfl.gov.uk/" target="_blank">api-portal.tfl.gov.uk</a> — raises rate limit from 50 to 500 req/min. Without a key, stop search may be rate-limited.</div>`;
+  h += '</div>';
+  h += '<button class="save-btn" id="saveKeyBtn" onclick="saveTflKey()">Save API Key</button>';
+  h += '<div class="settings-gap"></div>';
+
+  h += '<div class="section-label">Data</div>';
+  h += '<button class="danger-btn" onclick="resetApp()">Reset All Settings & Routes</button>';
+  h += `<div class="version-label">${APP_VERSION}</div>`;
+
+  sc.innerHTML = h;
+
+  document.getElementById('weatherLocSelect').addEventListener('change', function() {
+    config.weatherLocation = this.value;
+    saveConfig();
+    loadWeather();
+  });
+
+  sc.addEventListener('click', e => {
+    const del = e.target.closest('[data-del-id]');
+    if (del) deleteFav(del.dataset.delId);
+  });
+}
+
+function deleteFav(favId) {
+  if (!confirm('Remove this route?')) return;
+  config.favourites = config.favourites.filter(f => f.id !== favId);
+  saveConfig();
+  delete _cardStates[favId];
+  renderSettings();
+}
+
+function saveTflKey() {
+  const key = document.getElementById('tflKeyInput').value.trim();
+  config.tflKey = key;
+  saveConfig();
+  _arrivalsCache = {};
+  const btn = document.getElementById('saveKeyBtn');
+  if (btn) { btn.textContent = '✓ Saved'; btn.disabled = true; setTimeout(() => { btn.textContent = 'Save API Key'; btn.disabled = false; }, 2000); }
+}
+
+function resetApp() {
+  if (!confirm('Reset all settings and saved routes? This cannot be undone.')) return;
+  localStorage.removeItem('bus_config_v1');
+  config = JSON.parse(JSON.stringify(DEFAULTS));
+  _arrivalsCache = {};
+  _cardStates = {};
+  renderSettings();
+}
+
+// ─── UTILS ──────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function attrEsc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,'');
+}
+
+// ─── INIT ───────────────────────────────────────────────────
+async function init() {
+  renderHome();
+  loadWeather();
+  if (config.favourites.length > 0) loadAllCards();
+  startAutoRefresh();
+}
+
+init();
+</script>
+</body>
+</html>
