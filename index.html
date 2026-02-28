@@ -117,18 +117,30 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .settings-gap { height:24px; }
 
 /* ── Favourites in settings ── */
-.fav-setting-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); }
+.fav-setting-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); transition:opacity 0.15s, background 0.15s; }
 .fav-setting-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
 .fav-setting-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
 .fav-setting-item:only-child { border-radius:var(--radius); }
+.fav-setting-item.dnd-dragging { opacity:0.35; }
+.fav-setting-item.dnd-over-top { border-top:2px solid var(--blue) !important; }
+.fav-setting-item.dnd-over-bot { border-bottom:2px solid var(--blue) !important; }
 .fav-setting-badge { background:var(--bus-red); color:#fff; font-size:13px; font-weight:700; padding:3px 8px; border-radius:5px; min-width:38px; text-align:center; flex-shrink:0; }
 .fav-setting-info { flex:1; min-width:0; }
 .fav-setting-name { font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .fav-setting-sub { font-size:12px; color:var(--text-tertiary); margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.drag-handle { background:none; border:none; font-size:18px; cursor:grab; padding:4px 6px; color:var(--text-tertiary); flex-shrink:0; line-height:1; touch-action:none; }
+.drag-handle:active { cursor:grabbing; color:var(--text-secondary); }
 .fav-setting-delete { background:none; border:none; font-size:20px; cursor:pointer; padding:4px 6px; color:var(--text-tertiary); flex-shrink:0; }
 .fav-setting-delete:active { opacity:0.5; }
 .add-fav-btn { width:100%; padding:10px; background:var(--bg-card); border:1px dashed var(--separator); border-radius:var(--radius); color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-top:8px; }
 .add-fav-btn:active { opacity:0.7; }
+/* ── Equivalent suggestion ── */
+.equiv-suggest { padding:20px 16px; display:flex; flex-direction:column; gap:12px; }
+.equiv-title { font-size:17px; font-weight:600; }
+.equiv-body { font-size:14px; color:var(--text-secondary); line-height:1.5; }
+.equiv-actions { display:flex; flex-direction:column; gap:8px; }
+.equiv-skip { width:100%; padding:13px; background:transparent; border:1px solid var(--separator); border-radius:12px; color:var(--text-secondary); font-size:15px; font-family:inherit; cursor:pointer; }
+.equiv-skip:active { opacity:0.7; }
 
 /* ── Modal ── */
 .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; }
@@ -153,9 +165,18 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .modal-stop-header { padding:12px 16px 4px; font-size:13px; color:var(--text-secondary); border-bottom:0.5px solid var(--separator); }
 
 /* ── Route line grid ── */
-.route-line-grid { display:flex; flex-wrap:wrap; gap:10px; padding:16px; }
-.route-line-btn { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:17px; font-weight:800; padding:10px 16px; border-radius:8px; min-width:64px; border:none; font-family:inherit; cursor:pointer; letter-spacing:-0.5px; transition:opacity 0.15s; -webkit-user-select:none; user-select:none; }
+.route-line-grid { display:flex; flex-wrap:wrap; gap:14px 12px; padding:16px; }
+.route-line-item { display:flex; flex-direction:column; align-items:center; gap:5px; width:72px; }
+.route-line-btn { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:17px; font-weight:800; padding:10px 16px; border-radius:8px; width:100%; border:none; font-family:inherit; cursor:pointer; letter-spacing:-0.5px; transition:opacity 0.15s; -webkit-user-select:none; user-select:none; }
 .route-line-btn:active { opacity:0.7; }
+.route-line-btn.no-live { background:var(--bg-card); color:var(--text-secondary); border:1px solid var(--separator); }
+.route-dest { font-size:11px; color:var(--text-secondary); text-align:center; width:100%; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3; }
+.route-dest.dim { color:var(--text-tertiary); }
+.no-live-note { padding:4px 16px 12px; font-size:12px; color:var(--text-tertiary); font-style:italic; }
+.search-mode-hint { font-size:12px; color:var(--blue); padding:4px 2px 0; min-height:16px; }
+.time-toggle { display:flex; gap:8px; padding:12px 16px 4px; flex-shrink:0; }
+.time-toggle-btn { flex:1; padding:8px; border:1px solid var(--separator); border-radius:8px; background:none; color:var(--text-secondary); font-size:14px; font-family:inherit; cursor:pointer; transition:all 0.15s; -webkit-user-select:none; user-select:none; }
+.time-toggle-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
 
 /* ── Label editor ── */
 .label-editor { padding:16px; }
@@ -221,10 +242,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
   <div class="modal-sheet">
     <div class="modal-header">
       <h3 id="modalTitle">Add a Route</h3>
-      <button class="modal-close" onclick="closeAddModal()">Cancel</button>
+      <button class="modal-close" id="modalCloseBtn" onclick="handleModalClose()">Cancel</button>
     </div>
     <div class="modal-search" id="modalSearchArea">
-      <input type="text" id="modalSearchInput" placeholder="e.g. Hackney Road, Old Street…" autocomplete="off">
+      <input type="text" id="modalSearchInput" placeholder="Stop name or route number…" autocomplete="off">
+      <div class="search-mode-hint" id="searchModeHint"></div>
     </div>
     <div class="modal-list" id="modalList">
       <div class="modal-status">🔍 Start typing to search for a bus stop</div>
@@ -233,7 +255,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 </div>
 
 <script>
-const APP_VERSION = 'v1.0.0';
+const APP_VERSION = 'v1.1.0';
 
 // ─── DEFAULTS ───────────────────────────────────────────────
 const DEFAULTS = {
@@ -289,8 +311,12 @@ function saveConfig() {
   try { localStorage.setItem('bus_config_v1', JSON.stringify(config)); } catch(e) {}
 }
 
-// ─── ARRIVALS CACHE ─────────────────────────────────────────
-let _arrivalsCache = {}; // stopId -> { data, ts }
+// ─── CACHES ─────────────────────────────────────────────────
+const CACHE_TTL_ARRIVALS = 30 * 1000;        // 30s  — live bus times
+const CACHE_TTL_STATIC   = 10 * 60 * 1000;  // 10min — stop/route metadata
+let _arrivalsCache  = {}; // stopId -> { data, ts }
+let _stopDataCache  = {}; // stopId -> { data, ts }
+let _searchCache    = {}; // query  -> { data, ts }
 
 function invalidateStopCache(stopId) { delete _arrivalsCache[stopId]; }
 
@@ -534,21 +560,71 @@ document.getElementById('routesList').addEventListener('click', e => {
   if (btn) { e.stopPropagation(); refreshCard(btn.dataset.favId); }
 });
 
+// ─── BUS LINE / NIGHT BUS HELPERS ───────────────────────────
+// Relaxed bus line check: accept explicit 'bus' modeName, or no modeName if name looks like a bus route
+function isBusLine(l) {
+  if (l.modeName === 'bus') return true;
+  if (!l.modeName) return /^[A-Za-z]{0,3}\d+[A-Za-z]?$/.test(l.name || l.id || '');
+  return false;
+}
+// Night buses have an N prefix (N29, N207, etc.)
+function isNightBus(line) { return /^N\d/i.test(line); }
+// Night time = 23:00–05:59
+function isNightTime() { const h = new Date().getHours(); return h >= 23 || h < 6; }
+// Route query = looks like a bus route number (149, N29, W7, C10…)
+function isRouteQuery(q) { return /^[A-Za-z]{0,3}\d+[A-Za-z]?$/.test(q.trim()) && q.trim().length <= 6; }
+
 // ─── ADD MODAL ──────────────────────────────────────────────
 let _searchTimeout = null;
 let _pendingStop = null;   // { id, name }
 let _pendingLine = null;   // string
 let _pendingTowards = null; // string
+let _modalStep = 1;        // 1=search, 2=routes, 3=label
+let _nightMode = null;     // null=auto, 'day', 'night'
+let _routeGridData = null; // stored so toggle can re-render without re-fetch
+
+function setModalStep(step) {
+  _modalStep = step;
+  const btn = document.getElementById('modalCloseBtn');
+  if (btn) btn.textContent = step === 1 ? 'Cancel' : '← Back';
+}
+
+function handleModalClose() {
+  if (_modalStep === 1) {
+    closeAddModal();
+  } else if (_modalStep === 2) {
+    // Back to stop search
+    setModalStep(1);
+    _pendingStop = null;
+    document.getElementById('modalTitle').textContent = 'Add a Route';
+    document.getElementById('modalSearchArea').style.display = '';
+    const q = document.getElementById('modalSearchInput').value.trim();
+    if (q.length >= 2) {
+      doStopSearch(q); // re-renders from cache instantly
+    } else {
+      document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Start typing to search for a bus stop</div>';
+    }
+    setTimeout(() => document.getElementById('modalSearchInput').focus(), 100);
+  } else if (_modalStep === 3) {
+    // Back to route selection
+    selectStop(_pendingStop.id, _pendingStop.name);
+  }
+}
 
 function openAddModal() {
   _pendingStop = null;
   _pendingLine = null;
   _pendingTowards = null;
+  _nightMode = null;
+  _routeGridData = null;
+  setModalStep(1);
   document.getElementById('modalTitle').textContent = 'Add a Route';
   document.getElementById('modalSearchArea').style.display = '';
   const inp = document.getElementById('modalSearchInput');
   inp.value = '';
-  document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Start typing to search for a bus stop</div>';
+  const hint = document.getElementById('searchModeHint');
+  if (hint) hint.textContent = '';
+  document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Search by stop name or route number (e.g. 149, N29)</div>';
   document.getElementById('addModal').classList.add('active');
   setTimeout(() => inp.focus(), 250);
 }
@@ -561,34 +637,89 @@ function closeAddModal() {
 document.getElementById('modalSearchInput').addEventListener('input', () => {
   clearTimeout(_searchTimeout);
   const q = document.getElementById('modalSearchInput').value.trim();
+  const hint = document.getElementById('searchModeHint');
   if (q.length < 2) {
-    document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Start typing to search for a bus stop</div>';
+    document.getElementById('modalList').innerHTML = '<div class="modal-status">🔍 Search by stop name or route number (e.g. 149, N29)</div>';
+    if (hint) hint.textContent = '';
     return;
   }
+  // Pattern 1: "205 windsor" — route first, stop name filter
+  const routeFirstMatch = q.match(/^([A-Za-z]{0,3}\d+[A-Za-z]?)\s+(.+)$/);
+  if (routeFirstMatch && isRouteQuery(routeFirstMatch[1])) {
+    const [, lineId, filter] = routeFirstMatch;
+    if (hint) hint.textContent = `🚌 Route ${lineId.toUpperCase()} stops matching "${filter}"`;
+    document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Filtering…</div>';
+    _searchTimeout = setTimeout(() => doRouteSearch(lineId, filter), 200);
+    return;
+  }
+  // Pattern 2: "windsor 205" — stop name first, route filter at end
+  const stopFirstMatch = q.match(/^(.+)\s+([A-Za-z]{0,3}\d+[A-Za-z]?)$/);
+  if (stopFirstMatch && isRouteQuery(stopFirstMatch[2]) && !isRouteQuery(stopFirstMatch[1].trim())) {
+    const [, stopQuery, routeId] = stopFirstMatch;
+    if (hint) hint.textContent = `📍 Stops matching "${stopQuery.trim()}" serving route ${routeId.toUpperCase()}`;
+    document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Searching…</div>';
+    _searchTimeout = setTimeout(() => doStopSearch(stopQuery.trim(), routeId), 420);
+    return;
+  }
+  const routeMode = isRouteQuery(q);
+  if (hint) hint.textContent = routeMode ? `🚌 All stops on route ${q.toUpperCase()}` : '📍 Searching by stop name…';
   document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Searching…</div>';
-  _searchTimeout = setTimeout(() => doStopSearch(q), 420);
+  _searchTimeout = setTimeout(() => routeMode ? doRouteSearch(q) : doStopSearch(q), 420);
 });
 
-async function doStopSearch(query) {
+async function doStopSearch(query, routeFilter = '') {
   try {
-    const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const r = await fetch(`https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(query)}?modes=bus${key}`, {
-      mode: 'cors', headers: { 'Accept': 'application/json' }
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    const matches = (data.matches || []).filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).slice(0, 25);
+    const cacheKey = query.toLowerCase();
+    const now = Date.now();
+    let data;
+    if (_searchCache[cacheKey] && (now - _searchCache[cacheKey].ts) < CACHE_TTL_STATIC) {
+      data = _searchCache[cacheKey].data;
+    } else {
+      const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
+      const r = await fetch(`https://api.tfl.gov.uk/StopPoint/Search/${encodeURIComponent(query)}?modes=bus${key}`, {
+        mode: 'cors', headers: { 'Accept': 'application/json' }
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      data = await r.json();
+      _searchCache[cacheKey] = { data, ts: now };
+    }
+    // Deduplicate by name+indicator, and hide stops confirmed to have no bus routes
+    const seen = new Set();
+    const routeUp = routeFilter.toUpperCase();
+    const matches = (data.matches || []).filter(v => {
+      if (v.lines && v.lines.filter(isBusLine).length === 0) return false;
+      // If a route filter is set, only include stops whose lines include it
+      // (if lines data is absent, include the stop — we can't be sure)
+      if (routeFilter && v.lines) {
+        const hasRoute = v.lines.some(l => (l.name || l.id || '').toUpperCase() === routeUp);
+        if (!hasRoute) return false;
+      }
+      const key = `${v.name}|${v.indicator || ''}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 25);
+    const hint = document.getElementById('searchModeHint');
     if (!matches.length) {
-      document.getElementById('modalList').innerHTML = '<div class="modal-status">No stops found — try a different search</div>';
+      if (hint && routeFilter) hint.textContent = `📍 No stops matching "${query}" serve route ${routeUp}`;
+      document.getElementById('modalList').innerHTML = routeFilter
+        ? `<div class="modal-status">No stops matching "${esc(query)}" found serving route ${esc(routeUp)}</div>`
+        : '<div class="modal-status">No stops found — try a different search</div>';
       return;
     }
+    if (hint && routeFilter) hint.textContent = `📍 ${matches.length} stop${matches.length !== 1 ? 's' : ''} matching "${query}" serving route ${routeUp}`;
     let h = '';
     for (const stop of matches) {
       const indicator = stop.indicator ? ` (${stop.indicator})` : '';
       const towards = stop.towards ? stop.towards : '';
+      const lineCount = (stop.lines || []).filter(isBusLine).length;
+      const routeLabel = lineCount > 0 ? `${lineCount} route${lineCount !== 1 ? 's' : ''}` : null;
+      const subParts = [];
+      if (towards) subParts.push(`→ ${towards}`);
+      if (routeLabel) subParts.push(routeLabel);
       h += `<div class="modal-item" data-action="stop" data-stop-id="${attrEsc(stop.id)}" data-stop-name="${attrEsc(stop.name + indicator)}">
         <div class="item-main">${esc(stop.name)}${esc(indicator)}</div>
-        ${towards ? `<div class="item-sub">→ ${esc(towards)}</div>` : ''}
+        ${subParts.length ? `<div class="item-sub">${esc(subParts.join(' · '))}</div>` : ''}
       </div>`;
     }
     document.getElementById('modalList').innerHTML = h;
@@ -597,54 +728,204 @@ async function doStopSearch(query) {
   }
 }
 
+async function doRouteSearch(lineId, stopFilter = '') {
+  const cacheKey = 'route:' + lineId.toLowerCase();
+  const now = Date.now();
+  try {
+    let stops;
+    if (_searchCache[cacheKey] && (now - _searchCache[cacheKey].ts) < CACHE_TTL_STATIC) {
+      stops = _searchCache[cacheKey].data;
+    } else {
+      const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
+      const r = await fetch(`https://api.tfl.gov.uk/Line/${encodeURIComponent(lineId.toUpperCase())}/StopPoints${key}`, {
+        mode: 'cors', headers: { 'Accept': 'application/json' }
+      });
+      if (!r.ok) throw new Error(r.status === 404 ? `Route ${lineId.toUpperCase()} not found` : `HTTP ${r.status}`);
+      stops = await r.json();
+      _searchCache[cacheKey] = { data: stops, ts: now };
+    }
+    // Client-side filter — instant since data is cached
+    const filtered = stopFilter
+      ? stops.filter(s => (s.commonName || s.name || '').toLowerCase().includes(stopFilter.toLowerCase()))
+      : stops;
+    const hint = document.getElementById('searchModeHint');
+    if (!filtered.length) {
+      if (hint) hint.textContent = `🚌 No stops on route ${lineId.toUpperCase()} matching "${stopFilter}"`;
+      document.getElementById('modalList').innerHTML = `<div class="modal-status">No stops found matching "${esc(stopFilter)}" on route ${esc(lineId.toUpperCase())}<br><br>Try a broader search term.</div>`;
+      return;
+    }
+    if (hint) hint.textContent = stopFilter
+      ? `🚌 ${filtered.length} of ${stops.length} stops on route ${lineId.toUpperCase()}`
+      : `🚌 ${stops.length} stops on route ${lineId.toUpperCase()}`;
+    let h = '';
+    for (const stop of filtered) {
+      const letter = stop.stopLetter ? ` (Stop ${stop.stopLetter})` : '';
+      const name = (stop.commonName || stop.name || '').replace(/ Underground Station| Rail Station/gi, '');
+      h += `<div class="modal-item" data-action="stop" data-stop-id="${attrEsc(stop.id)}" data-stop-name="${attrEsc(name + letter)}">
+        <div class="item-main">${esc(name)}${esc(letter)}</div>
+      </div>`;
+    }
+    document.getElementById('modalList').innerHTML = h;
+  } catch(e) {
+    document.getElementById('modalList').innerHTML = `<div class="modal-status">⚠️ ${esc(e.message)}<br><br>Check the route number and try again.</div>`;
+  }
+}
+
 async function selectStop(stopId, stopName) {
   _pendingStop = { id: stopId, name: stopName };
+  setModalStep(2);
   document.getElementById('modalTitle').textContent = 'Choose a route';
   document.getElementById('modalSearchArea').style.display = 'none';
   document.getElementById('modalList').innerHTML = '<div class="modal-loading"><span class="modal-spinner"></span> Loading routes at this stop…</div>';
   try {
     const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const r = await fetch(`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}/Arrivals${key}`, {
-      mode: 'cors', headers: { 'Accept': 'application/json' }
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const arrivals = await r.json();
-    arrivals.sort((a, b) => a.timeToStation - b.timeToStation);
 
-    // Build map: lineName -> towards
-    const lineMap = {};
-    for (const a of arrivals) {
-      if (a.lineName && !lineMap[a.lineName]) {
-        lineMap[a.lineName] = a.towards || a.destinationName || '';
+    // Fetch static stop info (cached 10min) and live arrivals in parallel
+    const now = Date.now();
+    let stopData;
+    const arrivalsPromise = fetch(`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}/Arrivals${key}`, { mode:'cors', headers:{'Accept':'application/json'} });
+    if (_stopDataCache[stopId] && (now - _stopDataCache[stopId].ts) < CACHE_TTL_STATIC) {
+      stopData = _stopDataCache[stopId].data;
+    } else {
+      const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}${key}`, { mode:'cors', headers:{'Accept':'application/json'} });
+      if (!stopRes.ok) throw new Error(`HTTP ${stopRes.status}`);
+      stopData = await stopRes.json();
+      _stopDataCache[stopId] = { data: stopData, ts: now };
+    }
+    const arrivalsRes = await arrivalsPromise;
+
+    // Static lines from stop metadata — relaxed bus filter
+    const staticLineNames = (stopData.lines || [])
+      .filter(isBusLine)
+      .map(l => l.name || l.id);
+
+    // Helper: strip TfL's literal "null" strings
+    const cleanStr = s => (s && s !== 'null') ? s : '';
+
+    // Live arrivals: build map lineName -> towards
+    const liveLineMap = {};
+    if (arrivalsRes.ok) {
+      const arrivals = await arrivalsRes.json();
+      arrivals.sort((a, b) => a.timeToStation - b.timeToStation);
+      for (const a of arrivals) {
+        if (a.lineName && !liveLineMap[a.lineName]) {
+          liveLineMap[a.lineName] = cleanStr(a.towards) || cleanStr(a.destinationName) || '';
+        }
       }
     }
 
-    const lines = Object.keys(lineMap).sort((a, b) => {
-      const na = parseInt(a), nb = parseInt(b);
-      if (!isNaN(na) && !isNaN(nb)) return na - nb;
-      return a.localeCompare(b);
-    });
+    // ── Hub detection ────────────────────────────────────────
+    // If no live arrivals and this stop has bus child poles, it's a TfL hub.
+    // Show the individual poles so the user picks the right one (which has live data).
+    const hasLive = Object.keys(liveLineMap).length > 0;
+    if (!hasLive) {
+      const busChildren = (stopData.children || []).filter(c =>
+        (c.modes && c.modes.includes('bus')) ||
+        c.stopType === 'NaptanPublicBusCoachTram' ||
+        c.stopType === 'NaptanOnstreetBusCoachStopCluster'
+      );
+      if (busChildren.length > 0) {
+        let h = `<div class="modal-stop-header">📍 ${esc(stopName)} — which stop?</div>`;
+        for (const child of busChildren) {
+          const letter = child.stopLetter ? ` (Stop ${child.stopLetter})` : child.indicator ? ` (${child.indicator})` : '';
+          const childName = (child.commonName || stopName).replace(/ Underground Station| Rail Station/gi, '');
+          const towards = cleanStr(child.towards) || '';
+          h += `<div class="modal-item" data-action="stop" data-stop-id="${attrEsc(child.id)}" data-stop-name="${attrEsc(childName + letter)}">
+            <div class="item-main">${esc(childName + letter)}</div>
+            ${towards ? `<div class="item-sub">→ ${esc(towards)}</div>` : ''}
+          </div>`;
+        }
+        document.getElementById('modalList').innerHTML = h;
+        return;
+      }
+    }
 
-    if (!lines.length) {
-      document.getElementById('modalList').innerHTML = `<div class="modal-status">No buses arriving at this stop right now.<br><br>Try a different stop, or check back later.</div>`;
+    if (!staticLineNames.length && !hasLive) {
+      document.getElementById('modalList').innerHTML = `<div class="modal-status">No routes found for this stop.<br><br>Try a different stop.</div>`;
       return;
     }
 
-    let h = `<div class="modal-stop-header">📍 ${esc(stopName)}</div><div class="route-line-grid">`;
-    for (const line of lines) {
-      h += `<button class="route-line-btn" data-action="line" data-line="${attrEsc(line)}" data-towards="${attrEsc(lineMap[line])}">${esc(line)}</button>`;
-    }
-    h += '</div>';
-    document.getElementById('modalList').innerHTML = h;
+    // Store data for toggle re-renders
+    _routeGridData = { liveLineMap, staticLineNames, stopName };
+    renderRouteGrid();
   } catch(e) {
     document.getElementById('modalList').innerHTML = `<div class="modal-status">⚠️ Couldn't load routes: ${esc(e.message)}</div>`;
   }
+}
+
+function setNightMode(mode) {
+  _nightMode = mode;
+  renderRouteGrid();
+}
+
+function renderRouteGrid() {
+  if (!_routeGridData) return;
+  const { liveLineMap, staticLineNames, stopName } = _routeGridData;
+
+  const sortLines = arr => [...arr].sort((a, b) => {
+    const na = parseInt(a), nb = parseInt(b);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.localeCompare(b);
+  });
+
+  const allLiveLines = sortLines(Object.keys(liveLineMap));
+  const allStaticOnly = sortLines(staticLineNames.filter(l => !liveLineMap[l]));
+  const allLines = [...allLiveLines, ...allStaticOnly];
+
+  const hasNight = allLines.some(isNightBus);
+  const hasDay   = allLines.some(l => !isNightBus(l));
+  const showToggle = hasNight && hasDay;
+
+  // Determine active mode
+  const autoMode = isNightTime() ? 'night' : 'day';
+  const mode = _nightMode || autoMode;
+
+  const filterLine = l => mode === 'night' ? isNightBus(l) : !isNightBus(l);
+
+  const liveLines   = allLiveLines.filter(filterLine);
+  const staticOnly  = allStaticOnly.filter(filterLine);
+
+  let h = `<div class="modal-stop-header">📍 ${esc(stopName)}</div>`;
+
+  if (showToggle) {
+    h += `<div class="time-toggle">
+      <button class="time-toggle-btn${mode === 'day' ? ' active' : ''}" onclick="setNightMode('day')">☀️ Day routes</button>
+      <button class="time-toggle-btn${mode === 'night' ? ' active' : ''}" onclick="setNightMode('night')">🌙 Night routes</button>
+    </div>`;
+  }
+
+  h += `<div class="route-line-grid">`;
+  for (const line of liveLines) {
+    const towards = liveLineMap[line];
+    h += `<div class="route-line-item">
+      <button class="route-line-btn" data-action="line" data-line="${attrEsc(line)}" data-towards="${attrEsc(towards)}">${esc(line)}</button>
+      ${towards ? `<div class="route-dest">→ ${esc(towards)}</div>` : ''}
+    </div>`;
+  }
+  for (const line of staticOnly) {
+    h += `<div class="route-line-item">
+      <button class="route-line-btn no-live" data-action="line" data-line="${attrEsc(line)}" data-towards="">${esc(line)}</button>
+      <div class="route-dest dim">no live data</div>
+    </div>`;
+  }
+  if (!liveLines.length && !staticOnly.length) {
+    h += `<div style="padding:20px;color:var(--text-tertiary);font-size:14px">No ${mode} routes at this stop</div>`;
+  }
+  h += '</div>';
+  if (staticOnly.length) {
+    h += `<div class="no-live-note">⚫ Grey routes serve this stop but have no buses due right now</div>`;
+  }
+  if (showToggle && _nightMode === null) {
+    h += `<div class="no-live-note">Auto-showing ${mode} routes based on current time</div>`;
+  }
+  document.getElementById('modalList').innerHTML = h;
 }
 
 function selectLine(line, towards) {
   if (!_pendingStop) return;
   _pendingLine = line;
   _pendingTowards = towards;
+  setModalStep(3);
   document.getElementById('modalTitle').textContent = 'Name this route';
   document.getElementById('modalSearchArea').style.display = 'none';
   const defaultLabel = `${line} from ${_pendingStop.name.split(' (')[0]}`;
@@ -660,23 +941,84 @@ function selectLine(line, towards) {
   }, 100);
 }
 
-function saveFavourite() {
+function saveFavourite(force = false) {
   if (!_pendingStop || !_pendingLine) return;
   const labelEl = document.getElementById('labelInput');
   const label = labelEl ? labelEl.value.trim() : '';
+  const savedLine = _pendingLine;
+  const savedStop = _pendingStop;
+
+  // ── Duplicate check ──────────────────────────────────────
+  if (!force) {
+    const duplicate = config.favourites.find(f =>
+      f.stopId === savedStop.id && f.line.toUpperCase() === savedLine.toUpperCase()
+    );
+    if (duplicate) {
+      setModalStep(3);
+      document.getElementById('modalTitle').textContent = 'Already saved';
+      document.getElementById('modalSearchArea').style.display = 'none';
+      document.getElementById('modalList').innerHTML = `
+        <div class="equiv-suggest">
+          <div class="equiv-title">⚠️ Duplicate route</div>
+          <div class="equiv-body">You already have <strong>${esc(savedLine)}</strong> from <strong>${esc(savedStop.name)}</strong> in your routes. Add it again anyway?</div>
+          <div class="equiv-actions">
+            <button class="route-line-btn" style="width:100%;font-size:15px;padding:13px" onclick="saveFavourite(true)">Add anyway</button>
+            <button class="equiv-skip" onclick="handleModalClose()">← Go back</button>
+          </div>
+        </div>`;
+      return;
+    }
+  }
+
+  // ── Save ─────────────────────────────────────────────────
   const fav = {
     id: 'f' + Date.now() + Math.random().toString(36).slice(2),
-    stopId: _pendingStop.id,
-    stopName: _pendingStop.name,
-    line: _pendingLine,
+    stopId: savedStop.id,
+    stopName: savedStop.name,
+    line: savedLine,
     towards: _pendingTowards,
-    label: label || `${_pendingLine} from ${_pendingStop.name.split(' (')[0]}`,
+    label: label || `${savedLine} from ${savedStop.name.split(' (')[0]}`,
   };
   config.favourites.push(fav);
   saveConfig();
-  closeAddModal();
   renderHome();
+  renderSettings();
   loadCard(fav);
+
+  // ── Equivalent suggestion ────────────────────────────────
+  // Fix endless loop: only suggest if equiv is not already saved for this stop
+  const equiv = isNightBus(savedLine) ? savedLine.replace(/^N/i, '') : 'N' + savedLine;
+  const allLines = _routeGridData
+    ? [...Object.keys(_routeGridData.liveLineMap), ..._routeGridData.staticLineNames]
+    : [];
+  const equivExists = allLines.some(l => l.toUpperCase() === equiv.toUpperCase());
+  const equivAlreadySaved = config.favourites.some(f =>
+    f.stopId === savedStop.id && f.line.toUpperCase() === equiv.toUpperCase()
+  );
+
+  if (equivExists && !equivAlreadySaved) {
+    const equivTowards = (_routeGridData?.liveLineMap?.[equiv] || _routeGridData?.liveLineMap?.[equiv.toUpperCase()] || '');
+    const isNight = isNightBus(savedLine);
+    setModalStep(3);
+    document.getElementById('modalTitle').textContent = '✅ Route saved!';
+    document.getElementById('modalSearchArea').style.display = 'none';
+    document.getElementById('modalList').innerHTML = `
+      <div class="equiv-suggest">
+        <div class="equiv-title">${esc(savedLine)} added</div>
+        <div class="equiv-body">This stop also has the ${isNight ? '☀️ day' : '🌙 night'} equivalent <strong>${esc(equiv)}</strong>. Want to add it too?</div>
+        <div class="equiv-actions">
+          <button class="route-line-btn" style="width:100%;font-size:15px;padding:13px" onclick="addEquivalentLine('${attrEsc(equiv)}','${attrEsc(equivTowards)}')">Add ${esc(equiv)} from same stop</button>
+          <button class="equiv-skip" onclick="closeAddModal()">No thanks</button>
+        </div>
+      </div>`;
+  } else {
+    closeAddModal();
+  }
+}
+
+function addEquivalentLine(lineId, towards) {
+  _pendingLine = null;
+  selectLine(lineId, towards);
 }
 
 // Delegate modal list clicks
@@ -706,9 +1048,12 @@ function renderSettings() {
 
   h += '<div class="section-label">Your Routes</div>';
   if (config.favourites.length > 0) {
-    for (const fav of config.favourites) {
+    h += '<div id="favSettingsList">';
+    for (let i = 0; i < config.favourites.length; i++) {
+      const fav = config.favourites[i];
       h += `
-        <div class="fav-setting-item">
+        <div class="fav-setting-item" data-fav-id="${attrEsc(fav.id)}" data-fav-idx="${i}">
+          <button class="drag-handle" data-drag-idx="${i}" title="Drag to reorder">☰</button>
           <span class="fav-setting-badge">${esc(fav.line)}</span>
           <div class="fav-setting-info">
             <div class="fav-setting-name">${esc(fav.label || fav.stopName)}</div>
@@ -717,6 +1062,7 @@ function renderSettings() {
           <button class="fav-setting-delete" data-del-id="${attrEsc(fav.id)}" title="Remove">✕</button>
         </div>`;
     }
+    h += '</div>';
   } else {
     h += '<div style="background:var(--bg-card);border-radius:var(--radius);padding:20px;text-align:center;font-size:14px;color:var(--text-tertiary)">No routes saved yet</div>';
   }
@@ -743,17 +1089,22 @@ function renderSettings() {
 
   sc.innerHTML = h;
 
-  document.getElementById('weatherLocSelect').addEventListener('change', function() {
-    config.weatherLocation = this.value;
+  const list = document.getElementById('favSettingsList');
+  if (list) initDnd(list);
+}
+
+// One-time delegated handlers for settings (outside renderSettings to avoid listener accumulation on re-renders)
+document.getElementById('settingsContainer').addEventListener('click', e => {
+  const del = e.target.closest('[data-del-id]');
+  if (del) deleteFav(del.dataset.delId);
+});
+document.getElementById('settingsContainer').addEventListener('change', e => {
+  if (e.target && e.target.id === 'weatherLocSelect') {
+    config.weatherLocation = e.target.value;
     saveConfig();
     loadWeather();
-  });
-
-  sc.addEventListener('click', e => {
-    const del = e.target.closest('[data-del-id]');
-    if (del) deleteFav(del.dataset.delId);
-  });
-}
+  }
+});
 
 function deleteFav(favId) {
   if (!confirm('Remove this route?')) return;
@@ -779,6 +1130,81 @@ function resetApp() {
   _arrivalsCache = {};
   _cardStates = {};
   renderSettings();
+}
+
+// ─── DRAG AND DROP (SETTINGS) ───────────────────────────────
+let _dnd = null;
+
+function initDnd(list) {
+  list.addEventListener('pointerdown', e => {
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    e.preventDefault();
+    const item = handle.closest('.fav-setting-item');
+    if (!item) return;
+    const idx = parseInt(item.dataset.favIdx);
+    const items = [...list.querySelectorAll('.fav-setting-item')];
+    const rect = item.getBoundingClientRect();
+
+    // Ghost clone that follows pointer
+    const ghost = item.cloneNode(true);
+    ghost.style.cssText = `position:fixed;z-index:9999;pointer-events:none;width:${rect.width}px;
+      left:${rect.left}px;top:${rect.top}px;opacity:0.9;border-radius:var(--radius);
+      background:var(--bg-card-hover);box-shadow:0 8px 24px rgba(0,0,0,0.5);`;
+    document.body.appendChild(ghost);
+    item.classList.add('dnd-dragging');
+
+    _dnd = { idx, items, item, ghost, startY: e.clientY, ghostTop: rect.top, targetIdx: idx };
+
+    list.setPointerCapture(e.pointerId);
+  });
+
+  list.addEventListener('pointermove', e => {
+    if (!_dnd) return;
+    const dy = e.clientY - _dnd.startY;
+    _dnd.ghost.style.top = (_dnd.ghostTop + dy) + 'px';
+
+    // Find insertion target
+    let newTarget = _dnd.idx;
+    _dnd.items.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      if (e.clientY > r.top + r.height * 0.5) newTarget = i;
+    });
+    _dnd.targetIdx = newTarget;
+
+    // Clear indicators
+    _dnd.items.forEach(el => { el.classList.remove('dnd-over-top', 'dnd-over-bot'); });
+    if (newTarget !== _dnd.idx) {
+      const dir = newTarget > _dnd.idx ? 'dnd-over-bot' : 'dnd-over-top';
+      _dnd.items[newTarget].classList.add(dir);
+    }
+  });
+
+  list.addEventListener('pointerup', () => {
+    if (!_dnd) return;
+    const { idx, targetIdx, item, ghost, items } = _dnd;
+    ghost.remove();
+    item.classList.remove('dnd-dragging');
+    items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
+
+    if (targetIdx !== idx) {
+      const favs = [...config.favourites];
+      const [moved] = favs.splice(idx, 1);
+      favs.splice(targetIdx, 0, moved);
+      config.favourites = favs;
+      saveConfig();
+      renderSettings();
+    }
+    _dnd = null;
+  });
+
+  list.addEventListener('pointercancel', () => {
+    if (!_dnd) return;
+    _dnd.ghost.remove();
+    _dnd.item.classList.remove('dnd-dragging');
+    _dnd.items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
+    _dnd = null;
+  });
 }
 
 // ─── UTILS ──────────────────────────────────────────────────
