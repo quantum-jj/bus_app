@@ -1,6 +1,6 @@
-# Bus Checker — v1.9.0
+# Bus Checker — v2.2.0
 
-A minimalist London bus tracker PWA. See live arrival times for your favourite routes, organised into groups by location. Installable on iOS and Android for a native app feel. Dark, iOS-style UI — no dependencies, no build step.
+A lightweight London bus arrival checker PWA. Save your favourite locations, pick an origin and destination, and get live bus arrivals from nearby stops — no saved routes, everything is live. Designed as a quick daily commute companion, not a replacement for Citymapper or Google Maps.
 
 Hosted at: `https://quantum-jj.github.io/bus_app`
 
@@ -8,51 +8,56 @@ Hosted at: `https://quantum-jj.github.io/bus_app`
 
 ## Features
 
-### Route groups
-Favourites are organised into **groups**, each anchored to an origin postcode (e.g. "Home", "Work"). Within each group you can track as many bus routes as you like. Groups and routes can be reordered via drag-and-drop.
+### Location-based live lookup
+Save favourite locations (home, work, gym, etc.) with addresses searched via Photon/OpenStreetMap. On the home screen, pick an origin and destination, then tap the search button to see live bus arrivals from nearby stops heading toward your destination.
 
-### Live arrivals
-Each tile shows the next 3 arrival times for that route and stop, pulled from the **TfL Unified API**. Arrivals marked with a dot are live-tracked; others are scheduled. The tile shows a timestamp of the last refresh and a manual refresh button.
+### Smart search
+Address and postcode search powered by Photon (OpenStreetMap) with automatic London-area filtering. UK postcodes are detected and resolved via postcodes.io for reliable results. Search is available everywhere: the location picker modal, the location editor, and settings.
 
-### Night bus merging
-If your route has a night bus equivalent (e.g. 205 ↔ N205), the app automatically fetches arrivals for both and merges them into a single tile. When buses from both variants are in the next-3 window, the route badge cycles between the two line names with a smooth animation.
+### Smart route matching
+The app finds bus stops near both your origin and destination, then cross-references which bus lines serve both ends. Only routes that actually connect the two locations are shown — no more irrelevant buses heading in vaguely the right direction. Results are grouped by stop, showing bus lines with up to 3 arrival times each, colour-coded by urgency.
 
-### Walk time
-Each tile estimates your walking time from the group's origin postcode to the bus stop using a haversine distance calculation (with a 1.3× detour factor at 80 m/min). This is displayed inline on the stop name line. Walk times are computed once and stored — legacy routes get a retroactive estimate if stop coordinates are available.
+### Configurable walking distance
+Set your preferred walking radius in Settings (300m to 1.5 km). This controls how far from your origin and destination the app searches for bus stops — a larger radius finds more routes but means longer walks to/from stops.
 
-### Google Maps link
-Every tile has a 📍 button that opens Google Maps walking directions from your group's origin postcode to the bus stop.
+### Walk times & maps
+Each stop card shows an estimated walking time from your origin (haversine distance × 1.3 detour factor ÷ 80 m/min), plus a link to Google Maps walking directions.
 
-### Collapse / expand
-Individual tiles can be collapsed (showing just the route badge, stop name, and towards destination) by tapping the chevron in the top-right corner. Entire groups can also be collapsed by tapping the chevron next to the group name.
+### Auto-refresh
+Results refresh automatically every 30 seconds while on the home screen, with a manual refresh button available too.
 
-### Location awareness
-Enable location in the settings to automatically detect which group is nearest you. Nearby groups are shown first, sorted by your custom group order. Non-nearby groups follow, also in your custom order. On first location detection, non-nearby groups are auto-collapsed for a cleaner view. A green dot appears on nearby group headers.
+### Weather widget
+Current weather conditions and air quality for your Home location (or a fallback area), powered by Open-Meteo. Includes weather alerts for extreme conditions. Tap to open BBC Weather.
 
-### Group management
-- **Add / edit groups** — create a group with a name and origin postcode via the Settings page
-- **Drag to reorder** — drag groups up or down in Settings to set your preferred order
-- **Add routes via wizard** — a two-step wizard searches TfL stops near your postcode for your chosen line and direction
-- **No-results fallback** — if no routes are found (e.g. outside service hours), you can still save the group as a placeholder and add routes later
-- **Cross-group routes** — a route that already exists in another group can still be added to the current group; routes in other groups are marked "in another group" in the wizard
+### Custom emoji icons
+Each saved location can have a custom emoji icon, displayed in the location picker, route picker, and settings.
+
+### Location picker
+A bottom-sheet modal with three ways to select a location: search for an address, use your current GPS position, or pick from your saved locations. Edit buttons let you jump straight to a location's settings.
+
+### PWA with auto-updates
+Installable as a PWA on iOS and Android. The app checks for updates on launch and every 4 hours, showing a toast notification when a new version is available.
 
 ---
 
 ## How to use
 
 1. Open `index.html` in a browser (or install as a PWA via "Add to Home Screen")
-2. Tap **＋ Add group** and enter a name and your origin postcode
-3. The wizard searches nearby stops — select the route and direction you want
-4. Your tile appears on the home screen; tap **↻** to refresh arrivals or pull to re-fetch all
+2. Save your favourite locations in Settings (at minimum, set up Home and Work)
+3. On the home screen, tap the origin selector and pick where you're travelling from
+4. Tap the destination selector and pick where you're heading
+5. Tap the round search button — live bus arrivals appear grouped by nearby stop
 
 ---
 
 ## Tech
 
 - Plain HTML, CSS, and JavaScript — single `index.html` file, no frameworks, no build step
-- **TfL Unified API** for live arrivals and stop data
-- **postcodes.io** for postcode geocoding
-- **TfL Journey Planner API** for walk-time estimates during route setup
-- Haversine formula for distance calculations (walk time, proximity detection)
-- Pointer Events API for drag-and-drop (route and group reordering)
-- PWA manifest + service worker for offline capability and home screen installation
+- **TfL Unified API** for live arrivals and nearby stop discovery
+- **Photon** (OpenStreetMap) for address/location geocoding with London bias
+- **postcodes.io** for UK postcode resolution
+- **Open-Meteo** for weather and air quality data
+- Dual-endpoint line matching (cross-references lines at origin and destination stops)
+- Haversine formula + bearing calculations for distance, walk time, and direction sanity checks
+- PWA manifest for home screen installation
+- Dark iOS-style UI with CSS custom properties

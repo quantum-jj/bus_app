@@ -61,82 +61,114 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .screen.active { display:block; animation:fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 @keyframes spin { to { transform:rotate(360deg); } }
-@keyframes dot-pulse { 0% { box-shadow:0 0 0 0 rgba(10,132,255,0.8); } 100% { box-shadow:0 0 0 8px rgba(10,132,255,0); } }
 
-/* ── Favourite cards ── */
-.fav-card { background:var(--bg-card); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
-.fav-card.tappable { cursor:pointer; }
-.fav-card.tappable:active { background:var(--bg-card-hover); }
-.fav-card-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
-.bus-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:17px; font-weight:800; padding:5px 10px; border-radius:6px; min-width:52px; letter-spacing:-0.5px; flex-shrink:0; font-variant-numeric:tabular-nums; line-height:1.2; margin-top:1px; }
-/* Night-bus cycling badge */
-.bus-badge--cycling { position:relative; overflow:hidden; }
-.bus-badge--cycling .cycle-a,.bus-badge--cycling .cycle-b { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-.bus-badge--cycling .cycle-spacer { visibility:hidden; }
-@keyframes badge-cycle-a { 0%,42%{opacity:1} 50%,92%{opacity:0} 100%{opacity:1} }
-@keyframes badge-cycle-b { 0%,42%{opacity:0} 50%,92%{opacity:1} 100%{opacity:0} }
-.bus-badge--cycling .cycle-a { animation:badge-cycle-a 6s ease-in-out infinite; }
-.bus-badge--cycling .cycle-b { animation:badge-cycle-b 6s ease-in-out infinite; }
-/* Chip wrapper for day/night sub-label */
-.arrival-chip-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
-.arrival-chip-route { font-size:10px; color:var(--text-tertiary); font-weight:600; letter-spacing:0.03em; line-height:1; }
-.fav-info { flex:1; min-width:0; }
-.fav-label { font-size:15px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.fav-walk { font-size:12px; font-weight:400; color:var(--text-tertiary); margin-left:4px; }
-.fav-towards { font-size:15px; font-weight:400; color:var(--text-secondary); margin-top:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.fav-collapse-btn { background:none; border:none; color:var(--text-tertiary); font-size:18px; cursor:pointer; padding:0 2px; flex-shrink:0; line-height:1; transition:color 0.15s; }
-.fav-collapse-btn:active { color:var(--blue); }
-.fav-refresh-btn { background:none; border:none; color:var(--text-tertiary); font-size:16px; cursor:pointer; padding:0 2px; flex-shrink:0; line-height:1; }
-.fav-refresh-btn:active { color:var(--blue); }
-.fav-maps-btn { display:inline-flex; align-items:center; color:var(--text-tertiary); font-size:15px; text-decoration:none; padding:0 2px; flex-shrink:0; line-height:1; }
-.fav-maps-btn:active { color:var(--blue); }
-.fav-card.collapsed .arrivals-footer { display:none; }
-.fav-card.collapsed .fav-card-header { margin-bottom:0; }
-.arrivals-footer { display:flex; align-items:center; gap:6px; margin-top:10px; }
-.arrivals-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.fav-footer-actions { display:flex; align-items:center; gap:6px; margin-left:auto; flex-shrink:0; }
-.group-chevron-btn { background:none; border:none; color:var(--text-tertiary); font-size:15px; cursor:pointer; padding:2px 4px; line-height:1; flex-shrink:0; }
-.group-chevron-btn:active { color:var(--blue); }
-.group-section.collapsed .fav-card,
-.group-section.collapsed .group-empty { display:none; }
-.arrival-chip { display:inline-flex; align-items:center; justify-content:center; padding:5px 13px; border-radius:8px; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums; }
+/* ── Onboarding ── */
+.onboarding-hero { text-align:center; padding:48px 24px; }
+.onboarding-icon { font-size:72px; margin-bottom:16px; }
+.onboarding-title { font-size:28px; font-weight:700; margin-bottom:8px; }
+.onboarding-body { font-size:15px; color:var(--text-secondary); line-height:1.6; margin-bottom:32px; max-width:320px; margin-left:auto; margin-right:auto; }
+.onboarding-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:var(--blue); color:white; border:none; border-radius:14px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
+.onboarding-btn:active { opacity:0.8; }
+.onboarding-features { display:flex; flex-direction:column; gap:16px; margin-bottom:36px; text-align:left; max-width:300px; margin-left:auto; margin-right:auto; }
+.onboarding-feature { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--text-secondary); line-height:1.4; }
+.onboarding-feature-icon { font-size:20px; flex-shrink:0; margin-top:-2px; }
+
+/* ── Route Picker ── */
+.route-picker-card { background:var(--bg-card); border-radius:var(--radius); padding:14px; margin-bottom:20px; }
+.route-picker-endpoints { display:flex; gap:10px; position:relative; }
+.route-picker-selectors { flex:1; display:flex; flex-direction:column; gap:6px; min-width:0; }
+.route-picker-row { display:flex; align-items:center; gap:10px; }
+.route-picker-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.route-picker-dot.origin { background:var(--green); }
+.route-picker-dot.dest { background:var(--red); }
+.route-picker-selector { flex:1; padding:10px 12px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; display:flex; align-items:center; justify-content:space-between; cursor:pointer; text-align:left; transition:border-color 0.15s; min-width:0; }
+.route-picker-selector:active { background:var(--bg-card-hover); }
+.route-picker-selector .placeholder { color:var(--text-tertiary); }
+.route-picker-selector span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.route-picker-right { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex-shrink:0; }
+.route-picker-swap { background:none; border:1px solid var(--separator); width:32px; height:32px; border-radius:50%; color:var(--text-secondary); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
+.route-picker-swap:active { background:var(--bg-card-hover); color:var(--text-primary); }
+.route-picker-search-btn { width:44px; height:44px; background:var(--blue); color:white; border:none; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity 0.2s; flex-shrink:0; position:relative; }
+.route-picker-search-btn:active { opacity:0.8; }
+.route-picker-search-btn:disabled { opacity:0.4; pointer-events:none; }
+.route-picker-search-btn.searching { pointer-events:none; }
+.route-picker-search-btn .btn-spinner { display:none; width:20px; height:20px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+.route-picker-search-btn.searching .btn-icon { display:none; }
+.route-picker-search-btn.searching .btn-spinner { display:block; }
+
+/* ── Location Picker Modal ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; padding:0 0 20px; }
+.modal-overlay.active { display:flex; }
+.modal-sheet { width:100%; max-width:500px; max-height:85vh; background:#1c1c1e; border-radius:16px; display:flex; flex-direction:column; padding-bottom:var(--safe-bottom); }
+.modal-header { padding:16px; border-bottom:0.5px solid var(--separator); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.modal-header h3 { font-size:17px; font-weight:600; }
+.modal-close { background:none; border:none; color:var(--blue); font-size:17px; font-family:inherit; cursor:pointer; }
+.modal-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px; }
+.modal-search-wrap { position:relative; margin-bottom:12px; }
+.modal-search-input { width:100%; padding:10px 14px 10px 36px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
+.modal-search-input:focus { border-color:var(--blue); }
+.modal-search-input::placeholder { color:var(--text-tertiary); }
+.modal-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:15px; color:var(--text-tertiary); pointer-events:none; }
+.modal-section-label { font-size:12px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.03em; padding:8px 0 6px; }
+
+/* ── Location Picker Items ── */
+.loc-picker-item { display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; border-radius:0; }
+.loc-picker-item:first-of-type { border-radius:var(--radius) var(--radius) 0 0; }
+.loc-picker-item:last-of-type { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
+.loc-picker-item:only-of-type { border-radius:var(--radius); }
+.loc-picker-item:active { background:var(--bg-card-hover); }
+.loc-picker-item.disabled { opacity:0.35; pointer-events:none; }
+.loc-picker-icon { font-size:18px; width:28px; text-align:center; flex-shrink:0; }
+.loc-picker-info { flex:1; min-width:0; }
+.loc-picker-name { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.loc-picker-sub { font-size:12px; color:var(--text-tertiary); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.loc-picker-edit { background:none; border:none; color:var(--text-tertiary); font-size:13px; padding:6px 8px; cursor:pointer; flex-shrink:0; border-radius:8px; transition:all 0.15s; }
+.loc-picker-edit:active { background:var(--bg-card-hover); color:var(--blue); }
+
+/* ── Photon Autocomplete ── */
+.photon-results { margin-top:4px; }
+.photon-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; }
+.photon-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.photon-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
+.photon-item:only-child { border-radius:var(--radius); }
+.photon-item:active { background:var(--bg-card-hover); }
+.photon-item-icon { font-size:16px; width:24px; text-align:center; flex-shrink:0; color:var(--text-tertiary); }
+.photon-item-info { flex:1; min-width:0; }
+.photon-item-name { font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.photon-item-sub { font-size:12px; color:var(--text-tertiary); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ── Route Results ── */
+.results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.results-title { font-size:13px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.02em; }
+.results-refresh-btn { background:none; border:none; color:var(--blue); font-size:13px; font-family:inherit; cursor:pointer; padding:2px 0; }
+.results-loading { text-align:center; padding:40px 20px; font-size:15px; color:var(--text-secondary); }
+.results-loading .spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--text-tertiary); border-top-color:var(--text-primary); border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:10px; }
+.results-empty { text-align:center; padding:40px 20px; font-size:15px; color:var(--text-tertiary); line-height:1.5; }
+.results-error { text-align:center; padding:40px 20px; font-size:15px; color:var(--red); line-height:1.5; }
+
+/* ── Stop Group Card ── */
+.stop-group { background:var(--bg-card); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; }
+.stop-group-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.stop-group-name { font-size:15px; font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.stop-group-walk { font-size:12px; color:var(--text-tertiary); flex-shrink:0; }
+.stop-group-maps { color:var(--text-tertiary); font-size:15px; text-decoration:none; padding:0 2px; flex-shrink:0; }
+.stop-group-maps:active { color:var(--blue); }
+.line-row { display:flex; align-items:center; gap:10px; padding:6px 0; }
+.line-row + .line-row { border-top:0.5px solid var(--separator); padding-top:10px; }
+.bus-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--bus-red); color:#fff; font-size:15px; font-weight:800; padding:4px 9px; border-radius:6px; min-width:44px; letter-spacing:-0.5px; flex-shrink:0; font-variant-numeric:tabular-nums; line-height:1.2; }
+.line-info { flex:1; min-width:0; }
+.line-towards { font-size:13px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.arrivals-chips { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:4px; }
+.arrival-chip { display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; border-radius:7px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
 .arrival-due { background:rgba(255,69,58,0.15); color:var(--red); }
 .arrival-soon { background:rgba(255,214,10,0.15); color:var(--yellow); }
-.arrival-scheduled { font-style:italic; opacity:0.75; }
 .arrival-good { background:rgba(48,209,88,0.15); color:var(--green); }
-.arrivals-loading { font-size:14px; color:var(--text-tertiary); display:flex; align-items:center; gap:8px; }
-.arrivals-empty { font-size:14px; color:var(--text-tertiary); font-style:italic; }
-.arrivals-error { font-size:14px; color:var(--red); }
-.fav-timestamp { font-size:12px; color:var(--text-tertiary); white-space:nowrap; flex-shrink:0; }
-.card-spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--text-tertiary); border-top-color:var(--text-primary); border-radius:50%; animation:spin 0.7s linear infinite; }
-
-/* ── Empty state ── */
-.empty-state { text-align:center; padding:56px 20px; }
-.empty-icon { font-size:56px; margin-bottom:16px; }
-.empty-title { font-size:22px; font-weight:600; margin-bottom:8px; }
-.empty-body { font-size:15px; color:var(--text-secondary); line-height:1.5; margin-bottom:28px; }
-.add-first-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:var(--blue); color:white; border:none; border-radius:14px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
-.add-first-btn:active { opacity:0.8; }
-
-/* ── Group sections (home screen) ── */
-.group-section { background:#272729; border-radius:16px; padding:12px 12px 4px; margin-bottom:12px; }
-.group-header { display:flex; align-items:center; gap:8px; padding:0 0 8px; }
-.group-label { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.02em; flex:1; color:var(--text-secondary); transition:color 0.3s; }
-.group-label.nearby { color:var(--blue); }
-.group-nearby-dot { width:8px; height:8px; border-radius:50%; background:var(--blue); flex-shrink:0; display:none; }
-.group-nearby-dot.visible { display:block; animation:dot-pulse 2s ease-out infinite; }
-.group-edit-btn { background:none; border:none; color:var(--blue); font-size:13px; font-family:inherit; cursor:pointer; padding:2px 0 2px 8px; flex-shrink:0; }
-.group-empty { font-size:14px; color:var(--text-tertiary); padding:12px 16px; background:var(--bg-card); border-radius:var(--radius); margin-bottom:10px; text-align:center; }
-.ungrouped-header { font-size:13px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.02em; padding:0 0 10px; margin-top:8px; }
-.group-add-btn { width:100%; padding:14px; background:none; border:1.5px dashed var(--separator); border-radius:var(--radius); color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-top:4px; }
-.group-add-btn:active { opacity:0.7; }
 
 /* ── Settings ── */
 .settings-field { margin-bottom:24px; }
 .settings-input { width:100%; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
 .settings-input:focus { border-color:var(--blue); }
 .settings-input::placeholder { color:var(--text-tertiary); }
-.settings-input:disabled { color:var(--text-tertiary); opacity:0.7; }
 .settings-select { width:100%; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; -webkit-appearance:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238e8e93'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
 .settings-note { font-size:13px; color:var(--text-tertiary); padding:8px 4px 0; line-height:1.4; }
 .settings-note a { color:var(--blue); text-decoration:none; }
@@ -148,39 +180,29 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .version-label { text-align:center; font-size:12px; color:var(--text-tertiary); padding:32px 0 8px; }
 .settings-gap { height:24px; }
 
-/* ── Settings: group list ── */
-.settings-group-item { display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
-.settings-group-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
-.settings-group-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
-.settings-group-item:only-child { border-radius:var(--radius); }
-.settings-group-item:active { background:var(--bg-card-hover); }
-.settings-group-emoji { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
-.settings-group-info { flex:1; min-width:0; }
-.settings-group-name { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.settings-group-sub { font-size:12px; color:var(--text-tertiary); margin-top:2px; }
-.settings-group-chevron { color:var(--text-tertiary); font-size:18px; flex-shrink:0; }
-.settings-add-group-btn { width:100%; padding:10px; background:var(--bg-card); border:1px dashed var(--separator); border-radius:var(--radius); color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-top:8px; }
-.settings-add-group-btn:active { opacity:0.7; }
+/* ── Settings: location list ── */
+.settings-loc-item { display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
+.settings-loc-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.settings-loc-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
+.settings-loc-item:only-child { border-radius:var(--radius); }
+.settings-loc-item:active { background:var(--bg-card-hover); }
+.settings-loc-icon { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+.settings-loc-info { flex:1; min-width:0; }
+.settings-loc-name { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.settings-loc-sub { font-size:12px; color:var(--text-tertiary); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.settings-loc-chevron { color:var(--text-tertiary); font-size:18px; flex-shrink:0; }
+.settings-add-btn { width:100%; padding:10px; background:var(--bg-card); border:1px dashed var(--separator); border-radius:var(--radius); color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-top:8px; }
+.settings-add-btn:active { opacity:0.7; }
 
-/* ── Favourites in settings (route list within group editor) ── */
-.fav-setting-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); transition:opacity 0.15s, background 0.15s; }
-.fav-setting-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
-.fav-setting-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
-.fav-setting-item:only-child { border-radius:var(--radius); }
-.fav-setting-item.dnd-dragging { opacity:0.35; }
-.fav-setting-item.dnd-over-top { border-top:2px solid var(--blue) !important; }
-.fav-setting-item.dnd-over-bot { border-bottom:2px solid var(--blue) !important; }
-.settings-group-item.dnd-dragging { opacity:0.35; }
-.settings-group-item.dnd-over-top { border-top:2px solid var(--blue) !important; }
-.settings-group-item.dnd-over-bot { border-bottom:2px solid var(--blue) !important; }
-.fav-setting-badge { background:var(--bus-red); color:#fff; font-size:13px; font-weight:700; padding:3px 8px; border-radius:5px; min-width:38px; text-align:center; flex-shrink:0; }
-.fav-setting-info { flex:1; min-width:0; }
-.fav-setting-name { font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.fav-setting-sub { font-size:12px; color:var(--text-tertiary); margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.drag-handle { background:none; border:none; font-size:18px; cursor:grab; padding:4px 6px; color:var(--text-tertiary); flex-shrink:0; line-height:1; touch-action:none; }
-.drag-handle:active { cursor:grabbing; color:var(--text-secondary); }
-.fav-setting-delete { background:none; border:none; font-size:20px; cursor:pointer; padding:4px 6px; color:var(--text-tertiary); flex-shrink:0; }
-.fav-setting-delete:active { opacity:0.5; }
+/* ── Location Editor ── */
+.loc-editor-section { margin-bottom:20px; }
+.loc-editor-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:500; }
+.loc-editor-current { font-size:14px; color:var(--text-tertiary); padding:10px 14px; background:var(--bg); border-radius:10px; margin-bottom:8px; line-height:1.4; }
+.loc-editor-search-wrap { position:relative; }
+.loc-editor-saved-flash { font-size:13px; color:var(--green); padding:6px 0; font-weight:500; opacity:0; transition:opacity 0.3s; }
+.loc-editor-saved-flash.show { opacity:1; }
+.emoji-input-row { display:flex; align-items:center; gap:10px; }
+.emoji-input { width:52px; font-size:24px; text-align:center; padding:8px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; line-height:1; }
 
 /* ── Location toggle ── */
 .location-toggle-row { display:flex; align-items:center; gap:14px; padding:14px; background:var(--bg-card); border-radius:var(--radius); }
@@ -194,62 +216,13 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .toggle-switch input:checked + .toggle-slider { background:var(--green); }
 .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
 
-/* ── Group editor screen ── */
-.group-editor-name-row { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
-.group-editor-name-input { flex:1; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:17px; font-weight:600; font-family:inherit; outline:none; }
-.group-editor-name-input:focus { border-color:var(--blue); }
-.group-editor-postcode-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
-.group-editor-postcode-label { font-size:12px; color:var(--text-secondary); margin-bottom:5px; }
-.group-editor-postcode-input { width:100%; padding:10px 12px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:14px; font-family:inherit; outline:none; }
-.group-editor-postcode-input:focus { border-color:var(--blue); }
-.group-editor-postcode-input::placeholder { color:var(--text-tertiary); }
-.group-editor-refresh-btn { width:100%; padding:12px; background:var(--bg-card); border:1px solid var(--blue); border-radius:12px; color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; margin-bottom:24px; }
-.group-editor-refresh-btn:active { opacity:0.7; }
-.group-editor-save-btn { width:100%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; margin-bottom:10px; }
-.group-editor-save-btn:active { opacity:0.8; }
-
-/* ── Wizard modal ── */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; padding:0 0 20px; }
-.modal-overlay.active { display:flex; }
-.modal-sheet { width:100%; max-width:500px; max-height:90vh; background:#1c1c1e; border-radius:16px; display:flex; flex-direction:column; padding-bottom:var(--safe-bottom); }
-.modal-header { padding:16px; border-bottom:0.5px solid var(--separator); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-.modal-header h3 { font-size:17px; font-weight:600; }
-.modal-close { background:none; border:none; color:var(--blue); font-size:17px; font-family:inherit; cursor:pointer; }
-.modal-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.modal-status { text-align:center; padding:40px 20px; color:var(--text-secondary); font-size:15px; line-height:1.5; }
-.modal-loading { display:flex; align-items:center; justify-content:center; gap:10px; padding:40px 20px; color:var(--text-secondary); font-size:15px; }
-.modal-spinner { width:20px; height:20px; border:2px solid var(--text-tertiary); border-top-color:var(--text-primary); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
-
-/* ── Wizard body (step contents) ── */
-.wizard-body { padding:20px 16px; display:flex; flex-direction:column; gap:16px; }
-.wizard-field label { display:block; font-size:13px; color:var(--text-secondary); font-weight:500; margin-bottom:6px; }
-.wizard-field input { width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
-.wizard-field input:focus { border-color:var(--blue); }
-.wizard-field input::placeholder { color:var(--text-tertiary); }
-.walk-picker { display:flex; gap:8px; }
-.walk-btn { flex:1; padding:10px; border:1px solid var(--separator); border-radius:10px; background:none; color:var(--text-secondary); font-size:14px; font-family:inherit; cursor:pointer; transition:all 0.15s; -webkit-user-select:none; user-select:none; }
-.walk-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
-.wizard-primary-btn { width:100%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; }
-.wizard-primary-btn:active { opacity:0.8; }
-.wizard-primary-btn:disabled { opacity:0.4; pointer-events:none; }
-.wizard-secondary-btn { width:100%; padding:12px; background:transparent; border:1px solid var(--separator); border-radius:12px; color:var(--text-secondary); font-size:15px; font-family:inherit; cursor:pointer; }
-.wizard-secondary-btn:active { opacity:0.7; }
-.wizard-note { font-size:13px; color:var(--text-tertiary); line-height:1.5; text-align:center; padding:0 4px; }
-
-/* ── Route review list (wizard step 2) ── */
-.review-header { padding:16px 16px 8px; font-size:14px; color:var(--text-secondary); }
-.review-header strong { color:var(--text-primary); }
-.route-review-item { display:flex; align-items:center; gap:12px; padding:13px 16px; border-bottom:0.5px solid var(--separator); cursor:pointer; -webkit-user-select:none; user-select:none; transition:background 0.1s; }
-.route-review-item:last-child { border-bottom:none; }
-.route-review-item:active { background:var(--bg-card-hover); }
-.review-check { width:24px; height:24px; border-radius:50%; border:2px solid var(--separator); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; font-size:13px; font-weight:700; color:transparent; }
-.review-check.on { background:var(--blue); border-color:var(--blue); color:#fff; }
-.review-check.dup { background:var(--green); border-color:var(--green); color:#fff; }
-.review-route-info { flex:1; min-width:0; }
-.review-route-line { font-size:15px; font-weight:600; }
-.review-route-sub { font-size:13px; color:var(--text-secondary); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.review-walk { font-size:12px; color:var(--text-tertiary); flex-shrink:0; }
-.review-confirm-bar { padding:12px 16px; border-top:0.5px solid var(--separator); flex-shrink:0; }
+/* ── Update Toast ── */
+.update-toast { position:fixed; bottom:calc(20px + var(--safe-bottom)); left:16px; right:16px; max-width:468px; margin:0 auto; background:var(--bg-card); border:1px solid var(--separator); border-radius:14px; padding:14px 16px; z-index:300; display:flex; align-items:center; gap:12px; box-shadow:0 8px 32px rgba(0,0,0,0.5); animation:fadeIn 0.3s ease; }
+.update-toast-text { flex:1; font-size:14px; color:var(--text-secondary); }
+.update-toast-text strong { color:var(--text-primary); }
+.update-toast-btn { padding:8px 16px; background:var(--blue); color:white; border:none; border-radius:10px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; flex-shrink:0; }
+.update-toast-btn:active { opacity:0.8; }
+.update-toast-dismiss { background:none; border:none; color:var(--text-tertiary); font-size:18px; cursor:pointer; padding:4px; flex-shrink:0; line-height:1; }
 </style>
 </head>
 <body>
@@ -265,7 +238,25 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 </div>
 
 <div class="content">
-  <div class="screen active" id="homeScreen">
+  <!-- Onboarding -->
+  <div class="screen" id="onboardingScreen">
+    <div class="onboarding-hero">
+      <div class="onboarding-icon">🚌</div>
+      <div class="onboarding-title">Quick Bus Checker</div>
+      <div class="onboarding-body">
+        A lightweight companion for checking London bus arrivals at a glance. Not here to replace Citymapper or Google Maps — just your daily commute, simplified.
+      </div>
+      <div class="onboarding-features">
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">📍</span> Save your favourite locations</div>
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">🔍</span> Look up live bus arrivals between any two points</div>
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">🚶</span> See walking times to nearby stops</div>
+      </div>
+      <button class="onboarding-btn" onclick="completeOnboarding()">Get Started →</button>
+    </div>
+  </div>
+
+  <!-- Home -->
+  <div class="screen" id="homeScreen">
     <div class="weather-alert" id="weatherAlert">
       <div class="alert-title">⚠️ <span id="alertTitle"></span></div>
       <div class="alert-body" id="alertBody"></div>
@@ -288,46 +279,79 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
           <span>💧 <span id="wHumidity"></span></span>
           <span id="wAqiContainer" style="display:none">🫁 <span id="wAqi" class="aqi-badge"></span></span>
         </div>
-        <div class="weather-location" id="wLocation">📍 Hoxton · Tap for forecast</div>
+        <div class="weather-location" id="wLocation">📍 London · Tap for forecast</div>
       </div>
     </div>
-    <div id="routesList"></div>
+
+    <!-- Route Picker -->
+    <div class="route-picker-card">
+      <div class="route-picker-endpoints">
+        <div class="route-picker-selectors">
+          <div class="route-picker-row">
+            <div class="route-picker-dot origin"></div>
+            <button class="route-picker-selector" id="fromBtn" onclick="openLocationPicker('from')">
+              <span id="fromBtnText" class="placeholder">Select origin</span>
+              <span style="color:var(--text-tertiary);font-size:16px">›</span>
+            </button>
+          </div>
+          <div class="route-picker-row">
+            <div class="route-picker-dot dest"></div>
+            <button class="route-picker-selector" id="toBtn" onclick="openLocationPicker('to')">
+              <span id="toBtnText" class="placeholder">Select destination</span>
+              <span style="color:var(--text-tertiary);font-size:16px">›</span>
+            </button>
+          </div>
+        </div>
+        <div class="route-picker-right">
+          <button class="route-picker-swap" onclick="swapLocations()" title="Swap">↕</button>
+          <button class="route-picker-search-btn" id="lookupBtn" onclick="lookupRoutes()" disabled><span class="btn-icon">🔍</span><span class="btn-spinner"></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="routeResults"></div>
   </div>
 
+  <!-- Settings -->
   <div class="screen" id="settingsScreen">
     <div id="settingsContainer"></div>
   </div>
 
-  <div class="screen" id="groupEditorScreen">
-    <div id="groupEditorContainer"></div>
+  <!-- Location Editor -->
+  <div class="screen" id="locationEditorScreen">
+    <div id="locationEditorContainer"></div>
   </div>
 </div>
 
-<!-- Group wizard modal -->
-<div class="modal-overlay" id="wizardModal">
+<!-- Location Picker Modal -->
+<div class="modal-overlay" id="locPickerModal">
   <div class="modal-sheet">
     <div class="modal-header">
-      <h3 id="wizardTitle">New Group</h3>
-      <button class="modal-close" id="wizardCloseBtn" onclick="handleWizardClose()">Cancel</button>
+      <h3 id="locPickerTitle">Select Location</h3>
+      <button class="modal-close" onclick="closeLocPicker()">Cancel</button>
     </div>
-    <div class="modal-list" id="wizardBody"></div>
-    <div id="wizardConfirmBar"></div>
+    <div class="modal-body" id="locPickerBody"></div>
   </div>
 </div>
 
 <script>
-const APP_VERSION = 'v1.9.0';
+const APP_VERSION = 'v2.3.0';
+const DATA_VERSION = 1;
 
 // ─── DEFAULTS ───────────────────────────────────────────────
 const DEFAULTS = {
-  favourites: [],
-  groups: [
-    { id: 'g_home_work', name: 'Home → Work', fromPostcode: '', toPostcode: '', favIds: [] },
-    { id: 'g_work_home', name: 'Work → Home', fromPostcode: '', toPostcode: '', favIds: [] },
+  locations: [
+    { id: 'loc_home', name: 'Home', lat: null, lon: null, address: '', emoji: '' },
+    { id: 'loc_work', name: 'Work', lat: null, lon: null, address: '', emoji: '' },
   ],
   weatherLocation: 'hoxton',
   tflKey: '',
   locationEnabled: false,
+  onboardingSeen: false,
+  dataVersion: DATA_VERSION,
+  lastFromId: null,
+  lastToId: null,
+  walkingRadius: 500,
 };
 
 const WEATHER_LOCATIONS = [
@@ -367,35 +391,43 @@ let config = loadConfig();
 
 function loadConfig() {
   try {
-    const raw = localStorage.getItem('bus_config_v1');
-    if (raw) {
-      const stored = JSON.parse(raw);
-      // Deep-merge: ensure groups array exists (migration from pre-groups version)
-      return {
-        ...DEFAULTS,
-        ...stored,
-        groups: stored.groups || JSON.parse(JSON.stringify(DEFAULTS.groups)),
-      };
+    // Check for v2 config first
+    const raw2 = localStorage.getItem('bus_config_v2');
+    if (raw2) {
+      const stored = JSON.parse(raw2);
+      // Data version compatibility check
+      if (stored.dataVersion && stored.dataVersion !== DATA_VERSION) {
+        // Incompatible data version — clear and notify
+        localStorage.removeItem('bus_config_v2');
+        setTimeout(() => alert('Your saved data was reset for compatibility with the new app version.'), 500);
+        return JSON.parse(JSON.stringify(DEFAULTS));
+      }
+      return { ...JSON.parse(JSON.stringify(DEFAULTS)), ...stored };
+    }
+    // Check for v1 config (migration)
+    const raw1 = localStorage.getItem('bus_config_v1');
+    if (raw1) {
+      // Old data exists — clear it, start fresh
+      localStorage.removeItem('bus_config_v1');
+      const fresh = JSON.parse(JSON.stringify(DEFAULTS));
+      fresh.onboardingSeen = false; // show onboarding for migrated users too
+      setTimeout(() => alert('Welcome to Bus Checker v2! The app has been redesigned. Your previous routes have been cleared — please set up your locations to get started.'), 500);
+      return fresh;
     }
   } catch(e) {}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
 
 function saveConfig() {
-  try { localStorage.setItem('bus_config_v1', JSON.stringify(config)); } catch(e) {}
+  try { localStorage.setItem('bus_config_v2', JSON.stringify(config)); } catch(e) {}
 }
 
 // ─── CACHES ─────────────────────────────────────────────────
 const CACHE_TTL_ARRIVALS = 30 * 1000;
-const CACHE_TTL_STATIC   = 10 * 60 * 1000;
 let _arrivalsCache = {};
-let _stopDataCache = {};
-let _searchCache   = {};
-let _postcodeCache  = {}; // postcode -> {lat, lon}
-let _lineStatusCache = {}; // lineId -> {text, ts}
-let _userLocation  = null; // {lat, lon} — cached from last successful geolocation fetch
+let _userLocation = null;
 
-function invalidateStopCache(stopId) { delete _arrivalsCache[stopId]; }
+function invalidateArrivalsCache(stopId) { delete _arrivalsCache[stopId]; }
 
 async function fetchArrivals(stopId) {
   const now = Date.now();
@@ -413,36 +445,6 @@ async function fetchArrivals(stopId) {
   return data;
 }
 
-// Checks TfL line status and returns a short disruption string, or null if good service.
-// Cached for 2 minutes to avoid hammering the API on every card error.
-const CACHE_TTL_LINE_STATUS = 2 * 60 * 1000;
-async function fetchLineStatus(line) {
-  const now = Date.now();
-  const cached = _lineStatusCache[line];
-  if (cached && (now - cached.ts) < CACHE_TTL_LINE_STATUS) return cached.text;
-  try {
-    const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const r = await fetch(`https://api.tfl.gov.uk/Line/${encodeURIComponent(line)}/Status${key}`, {
-      mode: 'cors', headers: { 'Accept': 'application/json' }
-    });
-    if (!r.ok) { _lineStatusCache[line] = { text: null, ts: now }; return null; }
-    const data = await r.json();
-    const statuses = data[0]?.lineStatuses || [];
-    // severity 10 = Good Service — anything else is a disruption worth surfacing
-    const disruption = statuses.find(s => s.statusSeverity !== 10);
-    const text = disruption ? disruption.statusSeverityDescription : null;
-    _lineStatusCache[line] = { text, ts: now };
-    return text;
-  } catch(e) {
-    return null;
-  }
-}
-
-function getArrivalsForLine(arrivals, lineId) {
-  const lid = lineId.toLowerCase().trim();
-  return arrivals.filter(a => (a.lineId || '').toLowerCase() === lid).slice(0, 3);
-}
-
 function formatArrival(seconds) {
   if (seconds < 30) return 'Due';
   const mins = Math.round(seconds / 60);
@@ -456,14 +458,15 @@ function arrivalClass(seconds) {
 }
 
 // ─── NAVIGATION ─────────────────────────────────────────────
-let navStack = ['homeScreen'];
+let navStack = [];
 let refreshInterval = null;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const isHome = id === 'homeScreen';
-  document.getElementById('backBtn').classList.toggle('visible', !isHome);
+  const isOnboarding = id === 'onboardingScreen';
+  document.getElementById('backBtn').classList.toggle('visible', !isHome && !isOnboarding);
   document.getElementById('settingsBtn').style.display = isHome ? '' : 'none';
 }
 
@@ -481,8 +484,7 @@ function goBack() {
   if (prev === 'homeScreen') {
     document.getElementById('navTitle').textContent = '🚌 Buses';
     document.getElementById('navSubtitle').textContent = 'London TfL';
-    renderHome();
-    loadAllCards();
+    updatePickerButtons();
     startAutoRefresh();
   } else if (prev === 'settingsScreen') {
     document.getElementById('navTitle').textContent = '⚙️ Settings';
@@ -492,9 +494,17 @@ function goBack() {
 }
 
 // ─── WEATHER ────────────────────────────────────────────────
+function getWeatherCoords() {
+  // Use Home location if set, otherwise fall back to weather location setting
+  const home = config.locations.find(l => l.id === 'loc_home');
+  if (home && home.lat != null) return { lat: home.lat, lon: home.lon, name: home.name };
+  const loc = WEATHER_LOCATIONS.find(l => l.id === config.weatherLocation) || WEATHER_LOCATIONS[0];
+  return { lat: loc.lat, lon: loc.lon, name: loc.name };
+}
+
 async function loadWeather() {
   try {
-    const loc = WEATHER_LOCATIONS.find(l => l.id === config.weatherLocation) || WEATHER_LOCATIONS[0];
+    const loc = getWeatherCoords();
     const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m&wind_speed_unit=mph&timezone=Europe%2FLondon`;
     const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lon}&current=european_aqi`;
     const [wRes, aqiRes] = await Promise.all([fetch(wUrl), fetch(aqiUrl).catch(() => null)]);
@@ -546,791 +556,633 @@ async function loadWeather() {
   }
 }
 
-// ─── HOME / CARDS ────────────────────────────────────────────
-let _cardStates = {};
-let _collapsedCards = new Set();
-let _collapsedGroups = new Set();
-let _locationCollapseApplied = false;
+// ─── SEARCH (PHOTON + POSTCODES.IO) ─────────────────────────
+let _photonTimer = null;
 
-function renderHome() {
-  const list = document.getElementById('routesList');
+// Greater London bounding box (approx)
+const LONDON_BOUNDS = { minLat: 51.28, maxLat: 51.70, minLon: -0.52, maxLon: 0.34 };
 
-  // Collect all favId sets across groups for ungrouped detection
-  const allGroupedFavIds = new Set(config.groups.flatMap(g => g.favIds));
-  const ungroupedFavs = config.favourites.filter(f => !allGroupedFavIds.has(f.id));
-  const hasAnyRoutes = config.favourites.length > 0;
+function isInLondon(lat, lon) {
+  return lat >= LONDON_BOUNDS.minLat && lat <= LONDON_BOUNDS.maxLat
+      && lon >= LONDON_BOUNDS.minLon && lon <= LONDON_BOUNDS.maxLon;
+}
 
-  if (!hasAnyRoutes) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🚌</div>
-        <div class="empty-title">No routes yet</div>
-        <div class="empty-body">Create a group and we'll find the best bus routes between your locations automatically.</div>
-        <button class="add-first-btn" onclick="openGroupWizard()">＋ Create a Group</button>
-      </div>`;
-    return;
+function isPostcode(q) {
+  return /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i.test(q.trim());
+}
+
+async function searchPostcodesIo(query) {
+  try {
+    const r = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(query.trim())}`);
+    if (!r.ok) return [];
+    const data = await r.json();
+    if (data.status !== 200 || !data.result) return [];
+    const p = data.result;
+    if (!isInLondon(p.latitude, p.longitude)) return [];
+    return [{
+      name: p.postcode,
+      sub: [p.admin_ward, p.admin_district, 'London'].filter(Boolean).join(', '),
+      lat: p.latitude,
+      lon: p.longitude,
+      address: [p.postcode, p.admin_ward, p.admin_district].filter(Boolean).join(', '),
+    }];
+  } catch(e) { return []; }
+}
+
+async function searchPhoton(query) {
+  if (query.length < 2) return [];
+
+  // If it looks like a UK postcode, try postcodes.io first
+  if (isPostcode(query)) {
+    const pcResults = await searchPostcodesIo(query);
+    if (pcResults.length > 0) return pcResults;
   }
+
+  try {
+    // Bias toward London, request more results to filter
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lat=51.505&lon=-0.09&limit=10&lang=en&bbox=-0.52,51.28,0.34,51.70`;
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.features || [])
+      .filter(f => {
+        const coords = f.geometry?.coordinates;
+        if (!coords) return false;
+        return isInLondon(coords[1], coords[0]);
+      })
+      .slice(0, 5)
+      .map(f => {
+        const p = f.properties || {};
+        const coords = f.geometry.coordinates;
+        // Build a readable address with useful parts
+        const street = p.street || '';
+        const houseNumber = p.housenumber || '';
+        const district = p.district || '';
+        const city = p.city || p.county || '';
+        const postcode = p.postcode || '';
+        const name = p.name || '';
+
+        // Build display name: prefer street address, then name
+        let displayName = name;
+        if (street && houseNumber) {
+          displayName = `${houseNumber} ${street}`;
+        } else if (street) {
+          displayName = street;
+        } else if (!name) {
+          displayName = district || city || 'Unknown';
+        }
+
+        // Build subtitle with non-redundant location context
+        const subParts = [];
+        if (street && name && name !== street) subParts.push(street);
+        if (houseNumber && !displayName.includes(houseNumber)) subParts.push(houseNumber);
+        if (district && district !== displayName) subParts.push(district);
+        if (postcode) subParts.push(postcode);
+        if (city && city !== district && city !== displayName) subParts.push(city);
+
+        // Build full address
+        const addrParts = [displayName];
+        if (street && !displayName.includes(street)) addrParts.push(street);
+        if (district) addrParts.push(district);
+        if (postcode) addrParts.push(postcode);
+        if (city && city !== district) addrParts.push(city);
+
+        return {
+          name: displayName,
+          sub: subParts.join(', '),
+          lat: coords[1],
+          lon: coords[0],
+          address: [...new Set(addrParts)].join(', '),
+        };
+      });
+  } catch(e) { return []; }
+}
+
+function setupPhotonInput(inputEl, resultsEl, onSelect) {
+  inputEl.addEventListener('input', () => {
+    clearTimeout(_photonTimer);
+    const q = inputEl.value.trim();
+    if (q.length < 2) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; return; }
+    _photonTimer = setTimeout(async () => {
+      const results = await searchPhoton(q);
+      if (!results.length) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; return; }
+      resultsEl.style.display = 'block';
+      resultsEl.innerHTML = results.map((r, i) => `
+        <div class="photon-item" data-pidx="${i}">
+          <div class="photon-item-icon">📍</div>
+          <div class="photon-item-info">
+            <div class="photon-item-name">${esc(r.name)}</div>
+            <div class="photon-item-sub">${esc(r.sub)}</div>
+          </div>
+        </div>
+      `).join('');
+      resultsEl.querySelectorAll('[data-pidx]').forEach(el => {
+        el.addEventListener('click', () => {
+          const r = results[parseInt(el.dataset.pidx)];
+          onSelect(r);
+          resultsEl.innerHTML = '';
+          resultsEl.style.display = 'none';
+        });
+      });
+    }, 300);
+  });
+}
+
+// ─── LOCATION PICKER (MODAL) ───────────────────────────────
+let _pickerMode = null; // 'from' | 'to'
+let _fromSelection = null; // { name, lat, lon, locId?, isAdhoc?, isCurrent? }
+let _toSelection = null;
+
+function openLocationPicker(mode) {
+  _pickerMode = mode;
+  const title = mode === 'from' ? 'Select Origin' : 'Select Destination';
+  document.getElementById('locPickerTitle').textContent = title;
+  renderLocPickerBody();
+  document.getElementById('locPickerModal').classList.add('active');
+}
+
+function closeLocPicker() {
+  document.getElementById('locPickerModal').classList.remove('active');
+  _pickerMode = null;
+}
+
+function renderLocPickerBody() {
+  const body = document.getElementById('locPickerBody');
+  const other = _pickerMode === 'from' ? _toSelection : _fromSelection;
+  const otherLocId = other?.locId || null;
 
   let h = '';
 
-  // Render each group
-  for (const group of config.groups) {
-    const groupFavs = group.favIds
-      .map(id => config.favourites.find(f => f.id === id))
-      .filter(Boolean);
+  // Search box for ad-hoc
+  h += `<div class="modal-search-wrap">
+    <span class="modal-search-icon">🔍</span>
+    <input class="modal-search-input" id="pickerSearchInput" placeholder="Search address or postcode" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>`;
+  h += `<div class="photon-results" id="pickerPhotonResults"></div>`;
 
-    const grpCollapsed = _collapsedGroups.has(group.id);
-    h += `<div class="group-section${grpCollapsed ? ' collapsed' : ''}" id="group-section-${attrEsc(group.id)}">`;
-    h += `<div class="group-header" id="group-hdr-${attrEsc(group.id)}">`;
-    h += `<div class="group-nearby-dot" id="group-dot-${attrEsc(group.id)}"></div>`;
-    h += `<div class="group-label" id="group-lbl-${attrEsc(group.id)}">${esc(group.name)}</div>`;
-    h += `<button class="group-chevron-btn" id="group-chev-${attrEsc(group.id)}" onclick="toggleGroupCollapse('${attrEsc(group.id)}')" title="${grpCollapsed ? 'Expand' : 'Collapse'}">${grpCollapsed ? '▸' : '▾'}</button>`;
-    h += `<button class="group-edit-btn" onclick="showGroupEditor('${attrEsc(group.id)}')">Edit</button>`;
-    h += `</div>`;
+  // Current location
+  h += `<div class="modal-section-label">Quick options</div>`;
+  h += `<div class="loc-picker-item" id="pickerCurrentLoc">
+    <div class="loc-picker-icon">📍</div>
+    <div class="loc-picker-info">
+      <div class="loc-picker-name">Current location</div>
+      <div class="loc-picker-sub">Uses your device GPS</div>
+    </div>
+  </div>`;
 
-    if (groupFavs.length === 0) {
-      h += `<div class="group-empty">No routes in this group yet — <button style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;font-family:inherit;padding:0" onclick="openGroupWizard('${attrEsc(group.id)}')">find routes</button></div>`;
-    } else {
-      for (const fav of groupFavs) {
-        h += buildCardHtml(fav);
+  // Saved locations
+  const configured = config.locations.filter(l => l.lat != null);
+  const unconfigured = config.locations.filter(l => l.lat == null);
+
+  if (configured.length > 0) {
+    h += `<div class="modal-section-label" style="margin-top:12px">Saved locations</div>`;
+    for (const loc of configured) {
+      const disabled = loc.id === otherLocId;
+      const icon = loc.emoji || (loc.id === 'loc_home' ? '🏠' : loc.id === 'loc_work' ? '💼' : '⭐');
+      h += `<div class="loc-picker-item${disabled ? ' disabled' : ''}" data-pick-loc="${attrEsc(loc.id)}">
+        <div class="loc-picker-icon">${icon}</div>
+        <div class="loc-picker-info">
+          <div class="loc-picker-name">${esc(loc.name)}</div>
+          <div class="loc-picker-sub">${esc(loc.address || `${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}`)}</div>
+        </div>
+        <button class="loc-picker-edit" data-edit-picker-loc="${attrEsc(loc.id)}" title="Edit">✏️</button>
+      </div>`;
+    }
+  }
+
+  if (unconfigured.length > 0) {
+    h += `<div class="modal-section-label" style="margin-top:12px">Not yet set up</div>`;
+    for (const loc of unconfigured) {
+      const icon = loc.emoji || (loc.id === 'loc_home' ? '🏠' : loc.id === 'loc_work' ? '💼' : '⭐');
+      h += `<div class="loc-picker-item disabled">
+        <div class="loc-picker-icon">${icon}</div>
+        <div class="loc-picker-info">
+          <div class="loc-picker-name">${esc(loc.name)}</div>
+          <div class="loc-picker-sub">Set up in Settings</div>
+        </div>
+      </div>`;
+    }
+  }
+
+  body.innerHTML = h;
+
+  // Wire up search
+  const searchInput = document.getElementById('pickerSearchInput');
+  const photonResults = document.getElementById('pickerPhotonResults');
+  setupPhotonInput(searchInput, photonResults, r => {
+    pickLocation({ name: r.name, lat: r.lat, lon: r.lon, isAdhoc: true, address: r.address });
+  });
+
+  // Wire up current location
+  document.getElementById('pickerCurrentLoc').addEventListener('click', () => {
+    if (!navigator.geolocation) { alert('Geolocation not available'); return; }
+    const item = document.getElementById('pickerCurrentLoc');
+    item.querySelector('.loc-picker-sub').textContent = 'Getting location…';
+    navigator.geolocation.getCurrentPosition(pos => {
+      pickLocation({ name: 'Current location', lat: pos.coords.latitude, lon: pos.coords.longitude, isCurrent: true });
+    }, err => {
+      item.querySelector('.loc-picker-sub').textContent = err.code === 1 ? 'Permission denied' : 'Could not get location';
+    }, { maximumAge: 60000, timeout: 10000 });
+  });
+
+  // Wire up saved locations
+  body.querySelectorAll('[data-pick-loc]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      // Don't pick if edit button was clicked
+      if (e.target.closest('[data-edit-picker-loc]')) return;
+      const loc = config.locations.find(l => l.id === el.dataset.pickLoc);
+      if (loc && loc.lat != null) {
+        pickLocation({ name: loc.name, lat: loc.lat, lon: loc.lon, locId: loc.id, address: loc.address });
+      }
+    });
+  });
+
+  // Wire up edit buttons in picker
+  body.querySelectorAll('[data-edit-picker-loc]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeLocPicker();
+      openLocationEditor(el.dataset.editPickerLoc);
+    });
+  });
+
+  // Auto-focus search
+  setTimeout(() => searchInput.focus(), 250);
+}
+
+function pickLocation(sel) {
+  if (_pickerMode === 'from') {
+    _fromSelection = sel;
+    config.lastFromId = sel.locId || null;
+  } else {
+    _toSelection = sel;
+    config.lastToId = sel.locId || null;
+  }
+  saveConfig();
+  closeLocPicker();
+  updatePickerButtons();
+}
+
+function swapLocations() {
+  const tmp = _fromSelection;
+  _fromSelection = _toSelection;
+  _toSelection = tmp;
+  const tmpId = config.lastFromId;
+  config.lastFromId = config.lastToId;
+  config.lastToId = tmpId;
+  saveConfig();
+  updatePickerButtons();
+}
+
+function updatePickerButtons() {
+  const fromText = document.getElementById('fromBtnText');
+  const toText = document.getElementById('toBtnText');
+
+  if (_fromSelection) {
+    const loc = _fromSelection.locId ? config.locations.find(l => l.id === _fromSelection.locId) : null;
+    const emoji = loc?.emoji || '';
+    fromText.textContent = (emoji ? emoji + ' ' : '') + _fromSelection.name;
+    fromText.classList.remove('placeholder');
+  } else {
+    fromText.textContent = 'Select origin';
+    fromText.classList.add('placeholder');
+  }
+
+  if (_toSelection) {
+    const loc = _toSelection.locId ? config.locations.find(l => l.id === _toSelection.locId) : null;
+    const emoji = loc?.emoji || '';
+    toText.textContent = (emoji ? emoji + ' ' : '') + _toSelection.name;
+    toText.classList.remove('placeholder');
+  } else {
+    toText.textContent = 'Select destination';
+    toText.classList.add('placeholder');
+  }
+
+  document.getElementById('lookupBtn').disabled = !(_fromSelection && _toSelection);
+}
+
+// Close picker on backdrop tap
+document.getElementById('locPickerModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLocPicker();
+});
+
+// ─── ROUTE LOOKUP ───────────────────────────────────────────
+let _lastResults = null;
+let _lastResultsOrigin = null;
+let _lastResultsDest = null;
+
+async function lookupRoutes() {
+  if (!_fromSelection || !_toSelection) return;
+
+  const resultsEl = document.getElementById('routeResults');
+  resultsEl.innerHTML = `<div class="results-loading"><span class="spinner"></span> Finding nearby stops and routes…</div>`;
+
+  const lookupBtnEl = document.getElementById('lookupBtn');
+  if (lookupBtnEl) lookupBtnEl.classList.add('searching');
+
+  _lastResultsOrigin = { ..._fromSelection };
+  _lastResultsDest = { ..._toSelection };
+
+  const originRadius = config.walkingRadius || 500;
+  const destRadius = config.walkingRadius || 500;
+
+  try {
+    // 1. Find stops near origin AND destination in parallel
+    const [originStops, destStops] = await Promise.all([
+      findNearbyStops(_fromSelection.lat, _fromSelection.lon, originRadius),
+      findNearbyStops(_toSelection.lat, _toSelection.lon, destRadius),
+    ]);
+
+    if (originStops.length === 0) {
+      resultsEl.innerHTML = `<div class="results-empty">No bus stops found within ${originRadius}m of your origin. Try a different location or increase the walking distance in Settings.</div>`;
+      return;
+    }
+    if (destStops.length === 0) {
+      resultsEl.innerHTML = `<div class="results-empty">No bus stops found within ${destRadius}m of your destination. Try a different location or increase the walking distance in Settings.</div>`;
+      return;
+    }
+
+    // 2. Build set of line IDs that serve stops near the destination
+    //    Use multiple sources for robustness: lines[], lineModeGroups[], and arrivals fallback
+    const destLineIds = new Set();
+
+    // Source A: stop.lines[].id
+    for (const stop of destStops) {
+      for (const line of (stop.lines || [])) {
+        if (line.id) destLineIds.add(line.id.toLowerCase());
       }
     }
+    console.log(`[BusChecker] Dest lines from stop.lines: ${destLineIds.size}`, [...destLineIds].sort().join(', '));
+
+    // Source B: stop.lineModeGroups[] — often more reliable for bus lines
+    for (const stop of destStops) {
+      for (const group of (stop.lineModeGroups || [])) {
+        if (group.modeName === 'bus') {
+          for (const lid of (group.lineIdentifier || [])) {
+            if (lid) destLineIds.add(lid.toLowerCase());
+          }
+        }
+      }
+    }
+    console.log(`[BusChecker] Dest lines after lineModeGroups: ${destLineIds.size}`, [...destLineIds].sort().join(', '));
+
+    // Source C: If we still have very few lines, fetch arrivals at a few dest stops as fallback
+    if (destLineIds.size < 3) {
+      console.log('[BusChecker] Few dest lines found, fetching dest arrivals as fallback...');
+      const destArrPromises = destStops.slice(0, 5).map(async stop => {
+        try {
+          const arrivals = await fetchArrivals(stop.id || stop.naptanId);
+          for (const arr of arrivals) {
+            if (arr.lineId) destLineIds.add(arr.lineId.toLowerCase());
+          }
+        } catch(e) {}
+      });
+      await Promise.all(destArrPromises);
+      console.log(`[BusChecker] Dest lines after arrivals fallback: ${destLineIds.size}`, [...destLineIds].sort().join(', '));
+    }
+
+    if (destLineIds.size === 0) {
+      resultsEl.innerHTML = `<div class="results-empty">Could not determine bus lines near your destination. Try a different location or increase the walking distance in Settings.</div>`;
+      return;
+    }
+
+    // 3. Fetch arrivals at each origin stop and collect matched lines
+    const stopId = s => s.naptanId || s.id;
+    const originStopIds = new Set(originStops.map(s => stopId(s)));
+    const destStopIds = new Set(destStops.map(s => stopId(s)));
+
+    // Phase A: Fetch all origin arrivals and identify matched lines
+    const originArrivalsByStop = {};
+    const allMatchedLineIds = new Set();
+    const arrivalPromises = originStops.slice(0, 10).map(async stop => {
+      try {
+        const arrivals = await fetchArrivals(stopId(stop));
+        const byLine = {};
+        for (const arr of arrivals) {
+          const lid = (arr.lineId || '').toLowerCase();
+          if (!lid) continue;
+          if (!byLine[lid]) byLine[lid] = [];
+          byLine[lid].push(arr);
+        }
+        originArrivalsByStop[stopId(stop)] = { stop, byLine };
+        for (const lid of Object.keys(byLine)) {
+          if (destLineIds.has(lid)) allMatchedLineIds.add(lid);
+        }
+      } catch(e) { /* skip failed stops */ }
+    });
+    await Promise.all(arrivalPromises);
+
+    console.log(`[BusChecker] Matched lines to validate direction: [${[...allMatchedLineIds].sort().join(', ')}]`);
+
+    // Phase B: For each matched line, fetch Route Sequence to determine valid direction.
+    // The TfL Route Sequence API returns ordered stops for inbound/outbound.
+    // A direction is valid if an origin stop appears BEFORE a destination stop in the sequence.
+    // validStops maps lineId → Set of origin stopIds that are on the correct direction.
+    const validStops = {}; // lineId -> Set<stopId>
+    const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
+
+    const routeSeqPromises = [...allMatchedLineIds].map(async lineId => {
+      for (const dir of ['inbound', 'outbound']) {
+        try {
+          const r = await fetch(
+            `https://api.tfl.gov.uk/Line/${encodeURIComponent(lineId)}/Route/Sequence/${dir}?serviceTypes=Regular${key}`,
+            { mode: 'cors', headers: { 'Accept': 'application/json' } }
+          );
+          if (!r.ok) continue;
+          const data = await r.json();
+
+          for (const seq of (data.stopPointSequences || [])) {
+            const seqStops = (seq.stopPoint || []).map(sp => sp.id || sp.stationId);
+            // Find the LAST index of any origin stop and the FIRST index of any dest stop
+            let lastOriginIdx = -1;
+            let firstDestIdx = -1;
+            for (let i = 0; i < seqStops.length; i++) {
+              if (originStopIds.has(seqStops[i])) lastOriginIdx = i;
+            }
+            for (let i = 0; i < seqStops.length; i++) {
+              if (destStopIds.has(seqStops[i])) { firstDestIdx = i; break; }
+            }
+            // Valid if origin appears before destination in the stop sequence
+            if (lastOriginIdx !== -1 && firstDestIdx !== -1 && lastOriginIdx < firstDestIdx) {
+              if (!validStops[lineId]) validStops[lineId] = new Set();
+              // Record which origin stops are on this valid direction
+              for (const sid of seqStops) {
+                if (originStopIds.has(sid)) validStops[lineId].add(sid);
+              }
+              console.log(`[BusChecker] Line ${lineId} ${dir}: valid (origin idx ${lastOriginIdx} < dest idx ${firstDestIdx})`);
+            } else {
+              console.log(`[BusChecker] Line ${lineId} ${dir}: invalid (origin idx ${lastOriginIdx}, dest idx ${firstDestIdx})`);
+            }
+          }
+        } catch(e) {
+          console.log(`[BusChecker] Line ${lineId} ${dir}: route sequence fetch failed, will use fallback`);
+        }
+      }
+    });
+    await Promise.all(routeSeqPromises);
+
+    console.log(`[BusChecker] Direction validation complete. Lines with valid stops:`,
+      Object.fromEntries(Object.entries(validStops).map(([k, v]) => [k, [...v]])));
+
+    // Phase C: Build results using both line matching and direction validation
+    const stopResults = [];
+    for (const [sid, { stop, byLine }] of Object.entries(originArrivalsByStop)) {
+      const allOriginLineIds = Object.keys(byLine);
+      const matchedLineIds = allOriginLineIds.filter(lid => destLineIds.has(lid));
+      console.log(`[BusChecker] Stop ${stop.commonName || sid}: arrivals for [${allOriginLineIds.join(',')}], matched dest: [${matchedLineIds.join(',')}]`);
+
+      const lines = [];
+      for (const [lid, arrs] of Object.entries(byLine)) {
+        // PRIMARY FILTER: only include lines that also serve stops near the destination
+        if (!destLineIds.has(lid)) continue;
+
+        // SECONDARY FILTER: use route sequence to validate direction.
+        // If we have route sequence data for this line, only include if this stop is on a valid direction.
+        // If route sequence fetch failed (validStops[lid] undefined), fall back to compass direction.
+        if (validStops[lid]) {
+          if (!validStops[lid].has(sid)) {
+            console.log(`[BusChecker]   Line ${lid} at ${stop.commonName || sid}: wrong direction (route sequence)`);
+            continue;
+          }
+          console.log(`[BusChecker]   Line ${lid} at ${stop.commonName || sid}: correct direction (route sequence)`);
+        } else {
+          // Fallback: compass direction check if route sequence unavailable
+          const compassToDeg = { N:0, NE:45, E:90, SE:135, S:180, SW:225, W:270, NW:315 };
+          const stopCompass = ((stop.additionalProperties || []).find(p => p.key === 'CompassPoint')?.value || '').toUpperCase();
+          const stopDeg = compassToDeg[stopCompass];
+          if (stopDeg != null) {
+            const bearing = calculateBearing(_fromSelection.lat, _fromSelection.lon, _toSelection.lat, _toSelection.lon);
+            const diff = Math.abs(((bearing - stopDeg + 180 + 360) % 360) - 180);
+            if (diff > 150) { console.log(`[BusChecker]   Line ${lid} filtered by compass fallback (diff=${Math.round(diff)}°)`); continue; }
+          }
+          console.log(`[BusChecker]   Line ${lid} at ${stop.commonName || sid}: direction allowed (compass fallback)`);
+        }
+
+        lines.push({
+          lineId: arrs[0].lineId || lid,
+          lineName: arrs[0].lineName || arrs[0].lineId || lid,
+          towards: arrs[0].destinationName || arrs[0].towards || '',
+          arrivals: arrs.slice(0, 3),
+        });
+      }
+
+      if (lines.length > 0) {
+        const walkMins = calculateWalkTime(_fromSelection.lat, _fromSelection.lon, stop.lat, stop.lon);
+        stopResults.push({
+          stopId: sid,
+          stopName: formatStopName(stop),
+          lat: stop.lat,
+          lon: stop.lon,
+          walkMins,
+          lines: lines.sort((a, b) => {
+            const aMin = a.arrivals[0]?.timeToStation ?? Infinity;
+            const bMin = b.arrivals[0]?.timeToStation ?? Infinity;
+            return aMin - bMin;
+          }),
+        });
+      }
+    }
+
+    // Sort by walk time
+    stopResults.sort((a, b) => a.walkMins - b.walkMins);
+    _lastResults = stopResults;
+
+    console.log(`[BusChecker] Final: ${stopResults.length} stops with ${stopResults.reduce((n, s) => n + s.lines.length, 0)} lines total`);
+    renderRouteResults(stopResults);
+    startAutoRefresh();
+
+  } catch(e) {
+    resultsEl.innerHTML = `<div class="results-error">⚠️ ${esc(e.message)}</div>`;
+  } finally {
+    if (lookupBtnEl) lookupBtnEl.classList.remove('searching');
+  }
+}
+
+async function findNearbyStops(lat, lon, radius) {
+  const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
+  const r = await fetch(
+    `https://api.tfl.gov.uk/StopPoint?lat=${lat}&lon=${lon}&stopTypes=NaptanPublicBusCoachTram&radius=${radius}${key}`,
+    { mode: 'cors', headers: { 'Accept': 'application/json' } }
+  );
+  if (!r.ok) throw new Error(`TfL StopPoint error ${r.status}`);
+  const data = await r.json();
+  return (data.stopPoints || []);
+}
+
+function formatStopName(stop) {
+  const base = (stop.commonName || '').replace(/ Underground Station| Rail Station/gi, '');
+  const ind = stop.indicator || ((stop.additionalProperties || []).find(p => p.key === 'Indicator')?.value) || '';
+  return (base && ind) ? `${base} (${ind})` : base;
+}
+
+function calculateWalkTime(lat1, lon1, lat2, lon2) {
+  const dist = haversineMetres(lat1, lon1, lat2, lon2);
+  return Math.max(1, Math.round(dist * 1.3 / 80)); // 80m/min, 1.3× detour
+}
+
+function buildMapsUrl(fromLat, fromLon, toLat, toLon) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${fromLat},${fromLon}&destination=${toLat},${toLon}&travelmode=walking`;
+}
+
+function renderRouteResults(stopResults) {
+  const resultsEl = document.getElementById('routeResults');
+  if (!stopResults || stopResults.length === 0) {
+    resultsEl.innerHTML = `<div class="results-empty">No buses connecting these two locations right now. This could mean no shared routes exist, or services aren't running yet — try during normal service hours.</div>`;
+    return;
+  }
+
+  let h = `<div class="results-header">
+    <div class="results-title">Nearby Stops · ${stopResults.length} found</div>
+    <button class="results-refresh-btn" onclick="refreshResults()">↻ Refresh</button>
+  </div>`;
+
+  for (const stop of stopResults) {
+    const walkLabel = stop.walkMins <= 1 ? '1 min walk' : `${stop.walkMins} min walk`;
+    const mapsUrl = _fromSelection
+      ? buildMapsUrl(_fromSelection.lat, _fromSelection.lon, stop.lat, stop.lon)
+      : '#';
+
+    h += `<div class="stop-group" data-stop-id="${attrEsc(stop.stopId)}">`;
+    h += `<div class="stop-group-header">`;
+    h += `<div class="stop-group-name">📍 ${esc(stop.stopName)}</div>`;
+    h += `<div class="stop-group-walk">🚶 ${walkLabel}</div>`;
+    h += `<a class="stop-group-maps" href="${mapsUrl}" target="_blank" rel="noopener" title="Walking directions">📍</a>`;
+    h += `</div>`;
+
+    for (const line of stop.lines) {
+      h += `<div class="line-row">`;
+      h += `<span class="bus-badge">${esc(line.lineName)}</span>`;
+      h += `<div class="line-info">`;
+      h += `<div class="line-towards">→ ${esc(line.towards)}</div>`;
+      h += `<div class="arrivals-chips">`;
+      for (const arr of line.arrivals) {
+        h += `<span class="arrival-chip ${arrivalClass(arr.timeToStation)}">${formatArrival(arr.timeToStation)}</span>`;
+      }
+      h += `</div></div></div>`;
+    }
     h += `</div>`;
   }
 
-  // Ungrouped routes (migration: routes from before groups existed)
-  if (ungroupedFavs.length > 0) {
-    h += `<div class="ungrouped-header">Other Routes</div>`;
-    for (const fav of ungroupedFavs) {
-      h += buildCardHtml(fav);
-    }
-  }
-
-  h += `<button class="group-add-btn" onclick="openGroupWizard()">＋ Add a group</button>`;
-  list.innerHTML = h;
-  // Re-apply location dots immediately using cached position (no geolocation prompt)
-  applyLocationHighlight();
+  resultsEl.innerHTML = h;
 }
 
-// Build a Google Maps URL for a fav:
-//  - Directions mode (walking) when fromPostcode is known
-//  - Locate-stop-only fallback when no origin is available
-//  - Coordinates preferred for destination; stop name string as fallback
-function buildMapsUrl(fav) {
-  const group = config.groups.find(g => g.favIds.includes(fav.id));
-  const fromPostcode = group?.fromPostcode?.trim() || '';
-
-  // Destination: lat/lon is most accurate; fall back to stop name + city
-  const hasCoords = fav.stopLat != null && fav.stopLon != null;
-  const dest = hasCoords
-    ? `${fav.stopLat},${fav.stopLon}`
-    : encodeURIComponent((fav.stopName || fav.label || 'bus stop') + ', London');
-
-  if (fromPostcode) {
-    // Full directions mode
-    return `https://www.google.com/maps/dir/?api=1` +
-      `&origin=${encodeURIComponent(fromPostcode)}` +
-      `&destination=${dest}` +
-      `&travelmode=walking`;
-  } else {
-    // No origin: just locate the stop
-    return hasCoords
-      ? `https://www.google.com/maps/search/?api=1&query=${fav.stopLat},${fav.stopLon}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((fav.stopName || fav.label || 'bus stop') + ', London')}`;
-  }
-}
-
-// Derive the day/night line pair for a given stored line name.
-// e.g. "205" → {dayLine:"205", nightLine:"N205"}
-//      "N205" → {dayLine:"205", nightLine:"N205"}
-function dayNightPair(line) {
-  const l = line.trim();
-  if (/^N\d+$/i.test(l)) return { dayLine: l.slice(1), nightLine: l };
-  return { dayLine: l, nightLine: 'N' + l };
-}
-
-function buildCardHtml(fav) {
-  const state = _cardStates[fav.id];
-  const ts = state?.ts ? `Updated ${new Date(state.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}` : '';
-  const collapsed = _collapsedCards.has(fav.id);
-  let arrivalsContent;
-  let badgeHtml;
-  if (!state) {
-    arrivalsContent = `<div class="arrivals-loading"><span class="card-spinner"></span> Loading…</div>`;
-    badgeHtml = `<span class="bus-badge">${esc(fav.line)}</span>`;
-  } else if (state.error) {
-    arrivalsContent = `<div class="arrivals-error">⚠️ ${esc(state.error)}</div>`;
-    badgeHtml = `<span class="bus-badge">${esc(fav.line)}</span>`;
-  } else {
-    // Combine day + night arrivals from same stop, sorted by soonest
-    const { dayLine, nightLine } = dayNightPair(fav.line);
-    const all = state.arrivals || [];
-    const dayLid = dayLine.toLowerCase();
-    const nightLid = nightLine.toLowerCase();
-    const combined = [
-      ...all.filter(a => (a.lineId||'').toLowerCase() === dayLid).map(a => ({...a, _src: dayLine})),
-      ...all.filter(a => (a.lineId||'').toLowerCase() === nightLid).map(a => ({...a, _src: nightLine}))
-    ].sort((a, b) => a.timeToStation - b.timeToStation).slice(0, 3);
-
-    const hasDay   = combined.some(a => a._src === dayLine);
-    const hasNight = combined.some(a => a._src === nightLine);
-    const isMixed  = hasDay && hasNight;
-
-    // Badge: cycle between day/night labels if mixed, otherwise show whichever is present
-    if (isMixed) {
-      badgeHtml = `<span class="bus-badge bus-badge--cycling">
-        <span class="cycle-a">${esc(dayLine)}</span>
-        <span class="cycle-b">${esc(nightLine)}</span>
-        <span aria-hidden="true" class="cycle-spacer">${esc(nightLine)}</span>
-      </span>`;
-    } else {
-      const displayLine = combined.length > 0 ? combined[0]._src : fav.line;
-      badgeHtml = `<span class="bus-badge">${esc(displayLine)}</span>`;
-    }
-
-    if (combined.length === 0) {
-      arrivalsContent = `<div class="arrivals-empty">No buses in the next 30 min</div>`;
-    } else {
-      const chips = combined.map(a => {
-        const scheduled = a.operationType === 0;
-        const label = scheduled ? `Sched ${formatArrival(a.timeToStation)}` : formatArrival(a.timeToStation);
-        const cls = `arrival-chip ${arrivalClass(a.timeToStation)}${scheduled ? ' arrival-scheduled' : ''}`;
-        const chip = `<span class="${cls}">${label}</span>`;
-        return isMixed
-          ? `<div class="arrival-chip-wrap">${chip}<span class="arrival-chip-route">${esc(a._src)}</span></div>`
-          : chip;
-      }).join('');
-      arrivalsContent = `<div class="arrivals-chips">${chips}</div>`;
-    }
-  }
-  const walkStr = fav.walkMins == null ? ''
-    : fav.walkMins === 0 ? '<span class="fav-walk">· at stop</span>'
-    : `<span class="fav-walk">· ${fav.walkMins} min walk</span>`;
-  return `
-    <div class="fav-card${collapsed ? ' collapsed' : ''}" id="card-${esc(fav.id)}">
-      <div class="fav-card-header">
-        ${badgeHtml}
-        <div class="fav-info">
-          <div class="fav-label">📍 ${esc(fav.stopName || fav.label)}${walkStr}</div>
-          <div class="fav-towards">🏁 ${esc(fav.towards || 'various destinations')}</div>
-        </div>
-        <button class="fav-collapse-btn" onclick="toggleCardCollapse('${esc(fav.id)}')" title="${collapsed ? 'Expand' : 'Collapse'}">${collapsed ? '▸' : '▾'}</button>
-      </div>
-      <div class="arrivals-footer">
-        ${arrivalsContent}
-        <div class="fav-footer-actions">
-          ${ts ? `<div class="fav-timestamp">${ts}</div>` : ''}
-          <button class="fav-refresh-btn" data-fav-id="${esc(fav.id)}" title="Refresh">↻</button>
-          <a class="fav-maps-btn" href="${buildMapsUrl(fav)}" target="_blank" rel="noopener" title="Open in Google Maps">📍</a>
-        </div>
-      </div>
-    </div>`;
-}
-
-function patchCard(favId) {
-  const fav = config.favourites.find(f => f.id === favId);
-  if (!fav) return;
-  const el = document.getElementById('card-' + favId);
-  if (!el) return;
-  const tmp = document.createElement('div');
-  tmp.innerHTML = buildCardHtml(fav);
-  el.replaceWith(tmp.firstElementChild);
-}
-
-function toggleCardCollapse(favId) {
-  if (_collapsedCards.has(favId)) {
-    _collapsedCards.delete(favId);
-  } else {
-    _collapsedCards.add(favId);
-  }
-  patchCard(favId);
-}
-
-function toggleGroupCollapse(groupId) {
-  if (_collapsedGroups.has(groupId)) {
-    _collapsedGroups.delete(groupId);
-  } else {
-    _collapsedGroups.add(groupId);
-  }
-  const section = document.getElementById(`group-section-${groupId}`);
-  const chev = document.getElementById(`group-chev-${groupId}`);
-  const nowCollapsed = _collapsedGroups.has(groupId);
-  if (section) section.classList.toggle('collapsed', nowCollapsed);
-  if (chev) { chev.textContent = nowCollapsed ? '▸' : '▾'; chev.title = nowCollapsed ? 'Expand' : 'Collapse'; }
-}
-
-async function loadCard(fav) {
-  try {
-    const arrivals = await fetchArrivals(fav.stopId);
-    _cardStates[fav.id] = { arrivals, ts: Date.now() };
-  } catch(e) {
-    // Check line status to give a more useful message than a generic error
-    const disruption = await fetchLineStatus(fav.line).catch(() => null);
-    const errMsg = disruption
-      ? `⚠️ ${disruption}`
-      : "Couldn't load · tap ↻ to retry";
-    _cardStates[fav.id] = { error: errMsg, ts: Date.now() };
-  }
-  patchCard(fav.id);
-}
-
-async function refreshCard(favId) {
-  const fav = config.favourites.find(f => f.id === favId);
-  if (!fav) return;
-  invalidateStopCache(fav.stopId);
-  delete _cardStates[favId];
-  patchCard(favId);
-  await loadCard(fav);
-}
-
-async function loadAllCards() {
-  if (config.favourites.length === 0) return;
-  await Promise.all(config.favourites.map(f => loadCard(f)));
+async function refreshResults() {
+  if (!_lastResultsOrigin || !_lastResultsDest) return;
+  // Re-use current selections but invalidate caches
+  _arrivalsCache = {};
+  await lookupRoutes();
 }
 
 function startAutoRefresh() {
   clearInterval(refreshInterval);
   refreshInterval = setInterval(() => {
     if (navStack[navStack.length - 1] !== 'homeScreen') return;
-    for (const fav of config.favourites) {
-      const state = _cardStates[fav.id];
-      if (!state || (Date.now() - state.ts) > 30000) {
-        invalidateStopCache(fav.stopId);
-        delete _cardStates[fav.id];
-        patchCard(fav.id);
-        loadCard(fav);
-      }
-    }
-  }, 15000);
+    if (!_lastResults || _lastResults.length === 0) return;
+    // Silently refresh arrivals
+    _arrivalsCache = {};
+    lookupRoutes();
+  }, 30000);
 }
-
-// Delegate refresh clicks on route cards
-document.getElementById('routesList').addEventListener('click', e => {
-  const btn = e.target.closest('.fav-refresh-btn');
-  if (btn) { e.stopPropagation(); refreshCard(btn.dataset.favId); }
-});
-
-// ─── BUS LINE HELPERS ────────────────────────────────────────
-function isBusLine(l) {
-  if (l.modeName === 'bus') return true;
-  if (!l.modeName) return /^[A-Za-z]{0,3}\d+[A-Za-z]?$/.test(l.name || l.id || '');
-  return false;
-}
-function isNightBus(line) { return /^N\d/i.test(line); }
-function isNightTime() { const h = new Date().getHours(); return h >= 23 || h < 6; }
-
-// ─── GROUP WIZARD ────────────────────────────────────────────
-let _wiz = null; // wizard state
-
-function openGroupWizard(groupId = null) {
-  const existingGroup = groupId ? config.groups.find(g => g.id === groupId) : null;
-  _wiz = {
-    mode: existingGroup ? 'edit' : 'create',
-    groupId: groupId,
-    name: existingGroup ? existingGroup.name : 'Home → Work',
-    fromPostcode: existingGroup ? (existingGroup.fromPostcode || '') : '',
-    toPostcode: existingGroup ? (existingGroup.toPostcode || '') : '',
-    walkMins: 10,
-    results: [],
-    selected: new Set(),
-    step: 1,
-  };
-  document.getElementById('wizardTitle').textContent = existingGroup ? `Update: ${existingGroup.name}` : 'New Group';
-  document.getElementById('wizardCloseBtn').textContent = 'Cancel';
-  document.getElementById('wizardModal').classList.add('active');
-  renderWizardStep1();
-}
-
-function handleWizardClose() {
-  if (!_wiz) return;
-  if (_wiz.step === 2) {
-    _wiz.step = 1;
-    document.getElementById('wizardCloseBtn').textContent = 'Cancel';
-    renderWizardStep1();
-  } else {
-    closeWizardModal();
-  }
-}
-
-function closeWizardModal() {
-  document.getElementById('wizardModal').classList.remove('active');
-  document.getElementById('wizardConfirmBar').innerHTML = '';
-  _wiz = null;
-}
-
-function renderWizardStep1() {
-  _wiz.step = 1;
-  document.getElementById('wizardCloseBtn').textContent = 'Cancel';
-  const isEdit = _wiz.mode === 'edit';
-  document.getElementById('wizardBody').innerHTML = `
-    <div class="wizard-body">
-      <div class="wizard-field">
-        <label>From — postcode or address</label>
-        <input id="wiz-from" value="${attrEsc(_wiz.fromPostcode)}" placeholder="e.g. N1 9GU or Angel, London" autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-      <div class="wizard-field">
-        <label>To — postcode or address</label>
-        <input id="wiz-to" value="${attrEsc(_wiz.toPostcode)}" placeholder="e.g. EC1A 1BB or Liverpool Street" autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-      <div class="wizard-field">
-        <label>Max walking time to stop</label>
-        <div class="walk-picker">
-          <button class="walk-btn${_wiz.walkMins === 5 ? ' active' : ''}" onclick="setWalkMins(5)">5 min</button>
-          <button class="walk-btn${_wiz.walkMins === 10 ? ' active' : ''}" onclick="setWalkMins(10)">10 min</button>
-          <button class="walk-btn${_wiz.walkMins === 15 ? ' active' : ''}" onclick="setWalkMins(15)">15 min</button>
-        </div>
-      </div>
-      <button class="wizard-primary-btn" onclick="runJourneySearch()">Find routes →</button>
-      <p class="wizard-note">Uses live TfL data — buses not currently active may not appear.</p>
-    </div>`;
-  document.getElementById('wizardConfirmBar').innerHTML = '';
-  // Focus first relevant input
-  setTimeout(() => {
-    const inp = document.getElementById(_wiz.fromPostcode ? 'wiz-to' : 'wiz-from');
-    if (inp) inp.focus();
-  }, 250);
-}
-
-// TfL hub/cluster/interchange IDs don't work with the Arrivals endpoint.
-// Resolve them to a specific child bus stop pole.
-// Handles 490G... cluster IDs and non-490 formats (e.g. 940G... tube interchanges).
-async function resolveByProximity(lat, lon, preferredLine, destLat, destLon) {
-  try {
-    const key = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const r = await fetch(
-      `https://api.tfl.gov.uk/StopPoint?lat=${lat}&lon=${lon}&stopTypes=NaptanPublicBusCoachTram&radius=300${key}`,
-      { mode: 'cors', headers: { 'Accept': 'application/json' } }
-    );
-    if (!r.ok) return { id: null, name: null };
-    const data = await r.json();
-    let candidates = data.stopPoints || [];
-    if (preferredLine) {
-      const filtered = candidates.filter(s =>
-        (s.lines || []).some(l => (l.id || l.name || '').toUpperCase() === preferredLine.toUpperCase())
-      );
-      if (filtered.length) candidates = filtered;
-    }
-    const stopName = c => {
-      const base = c.commonName || '';
-      const ind  = c.indicator || '';
-      return (base && ind) ? `${base} (${ind})` : (base || null);
-    };
-    if (!candidates.length) return { id: null, name: null };
-    if (candidates.length === 1) return { id: candidates[0].id, name: stopName(candidates[0]) };
-    // Multiple candidates: use bearing to destination to pick directional stop
-    if (destLat != null && destLon != null) {
-      const bearing = calculateBearing(lat, lon, destLat, destLon);
-      const compassToDeg = { N: 0, NE: 45, E: 90, SE: 135, S: 180, SW: 225, W: 270, NW: 315 };
-      let best = null, bestDiff = Infinity;
-      for (const c of candidates) {
-        const cp = ((c.additionalProperties || []).find(p => p.key === 'CompassPoint')?.value || '').toUpperCase();
-        const deg = compassToDeg[cp];
-        if (deg == null) continue;
-        const diff = Math.abs(((bearing - deg + 180 + 360) % 360) - 180);
-        if (diff < bestDiff) { bestDiff = diff; best = c; }
-      }
-      if (best) return { id: best.id, name: stopName(best) };
-    }
-    return { id: candidates[0].id, name: stopName(candidates[0]) };
-  } catch(e) {
-    return { id: null, name: null };
-  }
-}
-
-async function resolveHubStop(stopId, preferredLine, destLat, destLon) {
-  // Already looks like an individual bus stop pole (490 + digits) — no resolution needed
-  if (!stopId || /^490\d/i.test(stopId)) return { id: stopId, name: null };
-  try {
-    const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const r = await fetch(
-      `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(stopId)}${key}`,
-      { mode: 'cors', headers: { 'Accept': 'application/json' } }
-    );
-    if (!r.ok) return { id: stopId, name: null };
-    const data = await r.json();
-    const busChildren = (data.children || []).filter(c =>
-      c.modes?.includes('bus') ||
-      c.stopType === 'NaptanPublicBusCoachTram' ||
-      c.stopType === 'NaptanOnstreetBusCoachStopCluster'
-    );
-    if (!busChildren.length) {
-      // Hub has no bus children (e.g. tube interchange) — fall back to proximity search
-      if (data.lat != null && data.lon != null) {
-        return await resolveByProximity(data.lat, data.lon, preferredLine, destLat, destLon);
-      }
-      return { id: stopId, name: null };
-    }
-
-    // Narrow to children that serve the preferred line (if provided)
-    const lineChildren = preferredLine
-      ? busChildren.filter(c => (c.lines || []).some(l => (l.name || l.id || '').toUpperCase() === preferredLine.toUpperCase()))
-      : busChildren;
-    const candidates = lineChildren.length ? lineChildren : busChildren;
-
-    // Build a display name from commonName + indicator (stop letter) if available
-    const hubStopName = c => {
-      const base = (c.commonName || '').replace(/ Underground Station| Rail Station/gi, '');
-      const ind  = c.indicator || ((c.additionalProperties || []).find(p => p.key === 'Indicator')?.value) || '';
-      return (base && ind) ? `${base} (${ind})` : (base || null);
-    };
-
-    // If only one candidate, use it
-    if (candidates.length === 1) {
-      const c = candidates[0];
-      return { id: c.id, name: hubStopName(c) };
-    }
-
-    // Multiple candidates (e.g. same line in both directions): use bearing to destination
-    // to pick the child stop whose compass direction points toward where we're going.
-    let chosen = null;
-    if (destLat != null && destLon != null && data.lat != null && data.lon != null) {
-      const bearing = calculateBearing(data.lat, data.lon, destLat, destLon);
-      const compassToDeg = { N: 0, NE: 45, E: 90, SE: 135, S: 180, SW: 225, W: 270, NW: 315 };
-      let bestDiff = Infinity;
-      for (const c of candidates) {
-        const cp = ((c.additionalProperties || []).find(p => p.key === 'CompassPoint')?.value || '').toUpperCase();
-        const deg = compassToDeg[cp];
-        if (deg == null) continue;
-        // Angular difference between bearing and compass direction
-        const diff = Math.abs(((bearing - deg + 180 + 360) % 360) - 180);
-        if (diff < bestDiff) { bestDiff = diff; chosen = c; }
-      }
-    }
-
-    // Final fallback: first candidate
-    if (!chosen) chosen = candidates[0];
-    return { id: chosen.id, name: hubStopName(chosen) };
-  } catch(e) {
-    return { id: stopId, name: null };
-  }
-}
-
-function setWalkMins(mins) {
-  _wiz.walkMins = mins;
-  document.querySelectorAll('.walk-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.textContent) === mins);
-  });
-}
-
-async function runJourneySearch() {
-  if (!_wiz) return;
-  // Read current form values
-  _wiz.fromPostcode = (document.getElementById('wiz-from')?.value || '').trim();
-  _wiz.toPostcode   = (document.getElementById('wiz-to')?.value || '').trim();
-  if (_wiz.mode === 'create') {
-    // Auto-generate group name from postcodes
-    const from = _wiz.fromPostcode.toUpperCase();
-    const to   = _wiz.toPostcode.toUpperCase();
-    _wiz.name  = (from && to) ? `${from} → ${to}` : (from || to || 'My Group');
-  }
-
-  if (!_wiz.fromPostcode || !_wiz.toPostcode) {
-    alert('Please enter both a From and To location.');
-    return;
-  }
-
-  // Show loading
-  _wiz.step = 2;
-  document.getElementById('wizardCloseBtn').textContent = '← Back';
-  document.getElementById('wizardBody').innerHTML = `
-    <div class="modal-loading">
-      <span class="modal-spinner"></span>
-      Searching for routes…
-    </div>`;
-  document.getElementById('wizardConfirmBar').innerHTML = '';
-
-  try {
-    const from = encodeURIComponent(_wiz.fromPostcode);
-    const to   = encodeURIComponent(_wiz.toPostcode);
-    const key  = config.tflKey ? `&app_key=${encodeURIComponent(config.tflKey)}` : '';
-    const url  = `https://api.tfl.gov.uk/Journey/JourneyResults/${from}/to/${to}?mode=bus${key}`;
-    const r = await fetch(url, { mode: 'cors', headers: { 'Accept': 'application/json' } });
-
-    if (!r.ok) {
-      if (r.status === 300) {
-        // TfL returns 300 when the location is ambiguous — try to use first option
-        const d = await r.json();
-        throw new Error(`Location ambiguous. Try a more specific postcode (e.g. "EC1A 1BB" instead of a street name).`);
-      }
-      throw new Error(`TfL returned ${r.status}. Check your postcode and try again.`);
-    }
-
-    const data = await r.json();
-
-    // Extract all single-bus-leg journeys within walk threshold
-    const routeMap = {}; // lineId -> best result (lowest walk mins)
-    for (const journey of data.journeys || []) {
-      const legs = journey.legs || [];
-      const busLegs = legs.filter(l => l.mode?.name === 'bus');
-      if (busLegs.length !== 1) continue; // skip multi-bus / tube+bus journeys
-
-      // First leg may be walking to the stop, last leg may be walking from the stop
-      const firstLeg = legs[0];
-      const lastLeg  = legs[legs.length - 1];
-      const walkMins = (firstLeg && firstLeg.mode?.name === 'walking')
-        ? Math.round(firstLeg.duration || 0)
-        : 0;
-      const walkAfterMins = (lastLeg && lastLeg !== firstLeg && lastLeg.mode?.name === 'walking')
-        ? Math.round(lastLeg.duration || 0)
-        : 0;
-      if (walkMins + walkAfterMins > _wiz.walkMins) continue;
-
-      const busLeg = busLegs[0];
-      const stopId   = busLeg.departurePoint?.naptanId || '';
-      const stopLat  = busLeg.departurePoint?.lat ?? null;
-      const stopLon  = busLeg.departurePoint?.lon ?? null;
-      const stopName = (busLeg.departurePoint?.commonName || '').replace(/ Underground Station| Rail Station/gi, '');
-      const towards  = (busLeg.arrivalPoint?.commonName || '').replace(/ Underground Station| Rail Station/gi, '');
-
-      for (const opt of busLeg.routeOptions || []) {
-        const line = opt.name || '';
-        if (!line) continue;
-        if (!routeMap[line] || walkMins < routeMap[line].walkMins) {
-          routeMap[line] = { line, stopId, stopLat, stopLon, stopName, towards, walkMins };
-        }
-      }
-    }
-
-    // Resolve hub/cluster stop IDs and empty stop IDs (tube interchange stops that
-    // have no naptanId in the Journey Planner response) to individual bus stop poles.
-    // Geocode the destination postcode so we can use bearing to pick the right
-    // directional child stop (e.g. northbound vs southbound at the same hub).
-    const hubIds = [...new Set(Object.values(routeMap).map(r => r.stopId).filter(id => id && !/^490\d/i.test(id)))];
-    const coordRoutes = Object.values(routeMap).filter(r => !r.stopId && r.stopLat != null);
-    if (hubIds.length || coordRoutes.length) {
-      const destCoords = await geocodePostcode(_wiz.toPostcode);
-      if (hubIds.length) {
-        await Promise.all(hubIds.map(async hubId => {
-          const linesForHub = Object.values(routeMap).filter(r => r.stopId === hubId).map(r => r.line);
-          const resolved = await resolveHubStop(
-            hubId, linesForHub[0] || '',
-            destCoords?.lat ?? null, destCoords?.lon ?? null
-          );
-          if (resolved.id !== hubId) {
-            for (const r of Object.values(routeMap)) {
-              if (r.stopId === hubId) {
-                r.stopId = resolved.id;
-                if (resolved.name) r.stopName = resolved.name;
-              }
-            }
-          }
-        }));
-      }
-      // Fallback for stops where Journey Planner returned no naptanId (e.g. tube interchange
-      // departure points) — use the departure point's lat/lon to find the correct bus pole.
-      if (coordRoutes.length) {
-        await Promise.all(coordRoutes.map(async r => {
-          const resolved = await resolveByProximity(
-            r.stopLat, r.stopLon, r.line,
-            destCoords?.lat ?? null, destCoords?.lon ?? null
-          );
-          if (resolved.id) {
-            r.stopId = resolved.id;
-            if (resolved.name) r.stopName = resolved.name;
-          }
-        }));
-      }
-    }
-
-    _wiz.results = Object.values(routeMap).sort((a, b) => {
-      // Sort: night buses last, then by walk time, then numerically
-      const aN = isNightBus(a.line) ? 1 : 0;
-      const bN = isNightBus(b.line) ? 1 : 0;
-      if (aN !== bN) return aN - bN;
-      if (a.walkMins !== b.walkMins) return a.walkMins - b.walkMins;
-      return parseInt(a.line) - parseInt(b.line) || a.line.localeCompare(b.line);
-    });
-
-    // Build a key set of routes already in THIS group (not other groups)
-    const existingGroup = _wiz.groupId ? config.groups.find(g => g.id === _wiz.groupId) : null;
-    const thisGroupKeys = new Set(
-      (existingGroup?.favIds || [])
-        .map(id => config.favourites.find(f => f.id === id))
-        .filter(Boolean)
-        .map(f => `${f.stopId}|${f.line.toUpperCase()}`)
-    );
-    // Build a key set of routes that exist in OTHER groups (informational only)
-    const otherGroupKeys = new Set(
-      config.groups
-        .filter(g => g.id !== _wiz.groupId)
-        .flatMap(g => g.favIds)
-        .map(id => config.favourites.find(f => f.id === id))
-        .filter(Boolean)
-        .map(f => `${f.stopId}|${f.line.toUpperCase()}`)
-    );
-
-    _wiz.results = _wiz.results.map(r => {
-      const key = `${r.stopId}|${r.line.toUpperCase()}`;
-      return {
-        ...r,
-        dup:        thisGroupKeys.has(key),   // already in this group — locked
-        otherGroup: !thisGroupKeys.has(key) && otherGroupKeys.has(key), // in a different group — still selectable
-      };
-    });
-
-    // Pre-select all non-dup routes (including those already in other groups)
-    _wiz.selected = new Set(
-      _wiz.results.map((r, i) => i).filter(i => !_wiz.results[i].dup)
-    );
-
-    renderWizardReview();
-
-  } catch(e) {
-    document.getElementById('wizardBody').innerHTML = `
-      <div class="wizard-body">
-        <div class="modal-status">⚠️ ${esc(e.message)}</div>
-        <button class="wizard-secondary-btn" onclick="renderWizardStep1()">← Try again</button>
-      </div>`;
-  }
-}
-
-function renderWizardReview() {
-  if (!_wiz) return;
-  _wiz.step = 2;
-  document.getElementById('wizardCloseBtn').textContent = '← Back';
-
-  // Group name field — shown in all step-2 screens so the user can edit before saving
-  const nameFieldHtml = `
-    <div class="wizard-field" style="padding:16px 16px 0">
-      <label>Group name</label>
-      <input id="wiz-group-name" value="${attrEsc(_wiz.name)}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g. Home → Work">
-    </div>`;
-
-  if (_wiz.results.length === 0) {
-    document.getElementById('wizardBody').innerHTML = `
-      <div class="wizard-body">
-        ${nameFieldHtml}
-        <div class="modal-status" style="margin-top:16px">
-          🚌 No direct bus routes found within ${_wiz.walkMins} min walk.<br><br>
-          Routes only appear when they're currently running — try during normal service hours, increase the walk time, or check your postcodes.
-        </div>
-        <button class="wizard-secondary-btn" onclick="renderWizardStep1()">← Try again</button>
-      </div>`;
-    document.getElementById('wizardConfirmBar').innerHTML =
-      `<div class="review-confirm-bar"><button class="wizard-primary-btn" onclick="confirmWizardRoutes()">Save group (no routes)</button></div>`;
-    return;
-  }
-
-  const fromShort = _wiz.fromPostcode.toUpperCase();
-  const toShort   = _wiz.toPostcode.toUpperCase();
-  let h = nameFieldHtml +
-    `<div class="review-header">Found <strong>${_wiz.results.length} route${_wiz.results.length !== 1 ? 's' : ''}</strong> from ${esc(fromShort)} to ${esc(toShort)}<br><span style="font-size:12px;opacity:0.6">Based on live TfL data — routes only appear when currently running.</span></div>`;
-
-  _wiz.results.forEach((r, i) => {
-    const isSel = _wiz.selected.has(i);
-    const checkClass = r.dup ? 'dup' : (isSel ? 'on' : '');
-    const checkMark = r.dup ? '✓' : (isSel ? '✓' : '');
-    const walkLabel = r.walkMins === 0 ? 'at stop' : `${r.walkMins} min walk`;
-    const otherTag = r.otherGroup ? `<span style="font-size:11px;color:var(--text-tertiary);margin-left:4px">· in another group</span>` : '';
-    h += `
-      <div class="route-review-item" data-review-idx="${i}">
-        <div class="review-check ${checkClass}">${checkMark}</div>
-        <span class="bus-badge" style="font-size:15px;padding:4px 9px;min-width:44px">${esc(r.line)}</span>
-        <div class="review-route-info">
-          <div class="review-route-line">${esc(r.stopName)}${otherTag}</div>
-          <div class="review-route-sub">${r.towards ? `→ ${esc(r.towards)}` : ''}</div>
-        </div>
-        <div class="review-walk">${walkLabel}</div>
-      </div>`;
-  });
-
-  document.getElementById('wizardBody').innerHTML = h;
-  updateWizardConfirmBar();
-}
-
-function updateWizardConfirmBar() {
-  const newCount = [..._wiz.selected].filter(i => !_wiz.results[i].dup).length;
-  const dupCount = _wiz.results.filter(r => r.dup).length;
-  let label = newCount > 0
-    ? `Add ${newCount} route${newCount !== 1 ? 's' : ''} to "${esc(_wiz.name)}"`
-    : `Done`;
-  if (dupCount > 0) label += ` <span style="font-size:13px;opacity:0.7">(${dupCount} already saved)</span>`;
-
-  const bar = document.getElementById('wizardConfirmBar');
-  bar.innerHTML = `<div class="review-confirm-bar"><button class="wizard-primary-btn" onclick="confirmWizardRoutes()">${label}</button></div>`;
-}
-
-// Toggle a review item selection
-document.getElementById('wizardBody').addEventListener('click', e => {
-  const item = e.target.closest('[data-review-idx]');
-  if (!item || !_wiz || _wiz.step !== 2) return;
-  const i = parseInt(item.dataset.reviewIdx);
-  const r = _wiz.results[i];
-  if (r.dup) return; // already saved, can't toggle
-  if (_wiz.selected.has(i)) _wiz.selected.delete(i);
-  else _wiz.selected.add(i);
-  // Update just this item's checkbox
-  const check = item.querySelector('.review-check');
-  const isSel = _wiz.selected.has(i);
-  check.className = `review-check ${isSel ? 'on' : ''}`;
-  check.textContent = isSel ? '✓' : '';
-  updateWizardConfirmBar();
-});
-
-function confirmWizardRoutes() {
-  if (!_wiz) return;
-
-  // Pick up any name the user typed in the review screen's name field
-  const nameInput = document.getElementById('wiz-group-name');
-  if (nameInput) {
-    const typed = nameInput.value.trim();
-    if (typed) _wiz.name = typed;
-  }
-
-  // Get or create the group
-  let group = _wiz.groupId ? config.groups.find(g => g.id === _wiz.groupId) : null;
-  if (!group) {
-    group = {
-      id: 'g' + Date.now(),
-      name: _wiz.name,
-      fromPostcode: _wiz.fromPostcode,
-      toPostcode: _wiz.toPostcode,
-      favIds: [],
-    };
-    config.groups.push(group);
-  } else {
-    // Update postcodes on edit
-    group.fromPostcode = _wiz.fromPostcode;
-    group.toPostcode   = _wiz.toPostcode;
-  }
-
-  const newFavs = [];
-  for (const i of _wiz.selected) {
-    const r = _wiz.results[i];
-    if (r.dup) continue; // already in favourites
-    const fav = {
-      id: 'f' + Date.now() + Math.random().toString(36).slice(2),
-      stopId:   r.stopId,
-      stopLat:  r.stopLat ?? null,
-      stopLon:  r.stopLon ?? null,
-      walkMins: r.walkMins ?? null,
-      stopName: r.stopName,
-      line:     r.line,
-      towards:  r.towards,
-      label:    `${r.line} from ${r.stopName.split(' (')[0]}`,
-    };
-    config.favourites.push(fav);
-    if (!group.favIds.includes(fav.id)) group.favIds.push(fav.id);
-    newFavs.push(fav);
-  }
-
-  saveConfig();
-  closeWizardModal();
-  renderHome();
-  renderSettings();
-  // If wizard was launched from the group editor, refresh that screen too
-  _editingGroupId = group.id;
-  renderGroupEditor(group.id);
-  for (const fav of newFavs) loadCard(fav);
-
-  // If location enabled, re-run proximity check so new group dots appear
-  if (config.locationEnabled) updateLocationHighlight();
-}
-
-// Close wizard on backdrop tap
-document.getElementById('wizardModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeWizardModal();
-});
 
 // ─── SETTINGS ───────────────────────────────────────────────
 function showSettings() {
@@ -1344,56 +1196,57 @@ function renderSettings() {
   const sc = document.getElementById('settingsContainer');
   let h = '';
 
-  // ── Groups ──
-  h += '<div class="section-label">Groups</div>';
-  if (config.groups.length > 0) {
-    h += '<div id="settingsGroupList">';
-    config.groups.forEach((group, i) => {
-      const routeCount = group.favIds.filter(id => config.favourites.find(f => f.id === id)).length;
-      const sub = [
-        routeCount > 0 ? `${routeCount} route${routeCount !== 1 ? 's' : ''}` : 'No routes',
-        group.fromPostcode ? `📍 ${group.fromPostcode.toUpperCase()}` : '',
-      ].filter(Boolean).join(' · ');
-      h += `
-        <div class="settings-group-item" data-group-id="${attrEsc(group.id)}" data-group-idx="${i}">
-          <button class="drag-handle" title="Drag to reorder">☰</button>
-          <div class="settings-group-info">
-            <div class="settings-group-name">${esc(group.name)}</div>
-            <div class="settings-group-sub">${esc(sub)}</div>
-          </div>
-          <div class="settings-group-chevron">›</div>
-        </div>`;
-    });
-    h += '</div>';
-  } else {
-    h += '<div style="background:var(--bg-card);border-radius:var(--radius);padding:20px;text-align:center;font-size:14px;color:var(--text-tertiary)">No groups yet</div>';
+  // ── Locations ──
+  h += '<div class="section-label">Saved Locations</div>';
+  h += '<div id="settingsLocList">';
+  for (const loc of config.locations) {
+    const icon = loc.emoji || (loc.id === 'loc_home' ? '🏠' : loc.id === 'loc_work' ? '💼' : '⭐');
+    const sub = loc.lat != null
+      ? (loc.address || `${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}`)
+      : 'Not set — tap to configure';
+    h += `<div class="settings-loc-item" data-edit-loc="${attrEsc(loc.id)}">
+      <div class="settings-loc-icon">${icon}</div>
+      <div class="settings-loc-info">
+        <div class="settings-loc-name">${esc(loc.name)}</div>
+        <div class="settings-loc-sub">${esc(sub)}</div>
+      </div>
+      <div class="settings-loc-chevron">›</div>
+    </div>`;
   }
-  h += `<div class="settings-note" style="margin-top:6px">Drag to reorder. When location is on, your nearby group always appears first.</div>`;
-  h += `<button class="settings-add-group-btn" onclick="openGroupWizard()">＋ Add a Group</button>`;
+  h += '</div>';
+  h += `<button class="settings-add-btn" onclick="addNewLocation()">＋ Add a location</button>`;
   h += '<div class="settings-gap"></div>';
 
-  // ── Location ──
-  h += '<div class="section-label">Location</div>';
-  h += `
-    <div class="location-toggle-row">
-      <div class="location-toggle-info">
-        <div class="location-toggle-title">Highlight nearby group</div>
-        <div class="location-toggle-sub">When enabled, the group closest to your current location is highlighted. Requires location permission.</div>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="locationToggle" ${config.locationEnabled ? 'checked' : ''}>
-        <span class="toggle-slider"></span>
-      </label>
-    </div>`;
-  h += '<div class="settings-gap"></div>';
+  // ── Walking Distance ──
+  h += '<div class="section-label">Walking Distance</div><div class="settings-field">';
+  h += '<select class="settings-select" id="walkingRadiusSelect">';
+  const radiusOptions = [
+    { val: 300, label: '300m (~4 min walk)' },
+    { val: 500, label: '500m (~6 min walk)' },
+    { val: 750, label: '750m (~10 min walk)' },
+    { val: 1000, label: '1 km (~13 min walk)' },
+    { val: 1500, label: '1.5 km (~19 min walk)' },
+  ];
+  for (const opt of radiusOptions) {
+    h += `<option value="${opt.val}" ${(config.walkingRadius || 500) === opt.val ? 'selected' : ''}>${esc(opt.label)}</option>`;
+  }
+  h += '</select>';
+  h += `<div class="settings-note">Maximum distance to search for bus stops around both your origin and destination. A larger radius finds more routes but means longer walks.</div>`;
+  h += '</div><div class="settings-gap"></div>';
 
   // ── Weather ──
   h += '<div class="section-label">Weather Location</div><div class="settings-field">';
-  h += '<select class="settings-select" id="weatherLocSelect">';
-  for (const loc of WEATHER_LOCATIONS) {
-    h += `<option value="${attrEsc(loc.id)}" ${config.weatherLocation === loc.id ? 'selected' : ''}>${esc(loc.name)}</option>`;
+  const home = config.locations.find(l => l.id === 'loc_home');
+  if (home && home.lat != null) {
+    h += `<div class="settings-note" style="padding:0 0 8px">Using your Home location for weather. Change your Home address above to update.</div>`;
+  } else {
+    h += '<select class="settings-select" id="weatherLocSelect">';
+    for (const loc of WEATHER_LOCATIONS) {
+      h += `<option value="${attrEsc(loc.id)}" ${config.weatherLocation === loc.id ? 'selected' : ''}>${esc(loc.name)}</option>`;
+    }
+    h += '</select>';
   }
-  h += '</select></div>';
+  h += '</div>';
 
   // ── TfL key ──
   h += '<div class="section-label">TfL API Key</div><div class="settings-field">';
@@ -1403,23 +1256,23 @@ function renderSettings() {
   h += '<button class="save-btn" id="saveKeyBtn" onclick="saveTflKey()">Save API Key</button>';
   h += '<div class="settings-gap"></div>';
 
+  // ── App ──
+  h += '<div class="section-label">App</div>';
+  h += `<button class="save-btn" style="background:var(--bg-card);color:var(--blue);border:1px solid var(--separator)" onclick="checkForUpdates(true)">Check for Updates</button>`;
+  h += '<div class="settings-gap"></div>';
+
   // ── Data ──
   h += '<div class="section-label">Data</div>';
-  h += '<button class="danger-btn" onclick="resetApp()">Reset All Settings & Routes</button>';
+  h += '<button class="danger-btn" onclick="resetApp()">Reset All Settings & Locations</button>';
   h += `<div class="version-label">${APP_VERSION}</div>`;
 
   sc.innerHTML = h;
-  const list = document.getElementById('favSettingsList');
-  if (list) initDnd(list);
-  const grpList = document.getElementById('settingsGroupList');
-  if (grpList) initGroupsDnd(grpList);
 }
 
-// One-time delegated handlers for settings
+// Settings event delegation
 document.getElementById('settingsContainer').addEventListener('click', e => {
-  // Group item tap → go to group editor (but not if the drag handle was tapped)
-  const groupItem = e.target.closest('[data-group-id]');
-  if (groupItem && !e.target.closest('.drag-handle')) { showGroupEditor(groupItem.dataset.groupId); return; }
+  const locItem = e.target.closest('[data-edit-loc]');
+  if (locItem) { openLocationEditor(locItem.dataset.editLoc); return; }
 });
 
 document.getElementById('settingsContainer').addEventListener('change', e => {
@@ -1428,20 +1281,9 @@ document.getElementById('settingsContainer').addEventListener('change', e => {
     saveConfig();
     loadWeather();
   }
-  if (e.target?.id === 'locationToggle') {
-    const enabled = e.target.checked;
-    if (enabled) {
-      config.locationEnabled = true;
-      saveConfig();
-      // updateLocationHighlight will auto-revert config + toggle if permission is denied
-      updateLocationHighlight();
-    } else {
-      config.locationEnabled = false;
-      _userLocation = null;
-      saveConfig();
-      document.querySelectorAll('.group-nearby-dot').forEach(d => d.classList.remove('visible'));
-      document.querySelectorAll('.group-label').forEach(l => l.classList.remove('nearby'));
-    }
+  if (e.target?.id === 'walkingRadiusSelect') {
+    config.walkingRadius = parseInt(e.target.value) || 500;
+    saveConfig();
   }
 });
 
@@ -1455,282 +1297,167 @@ function saveTflKey() {
 }
 
 function resetApp() {
-  if (!confirm('Reset all settings and saved routes? This cannot be undone.')) return;
-  localStorage.removeItem('bus_config_v1');
+  if (!confirm('Reset all settings and saved locations? This cannot be undone.')) return;
+  localStorage.removeItem('bus_config_v2');
   config = JSON.parse(JSON.stringify(DEFAULTS));
   _arrivalsCache = {};
-  _cardStates = {};
+  _fromSelection = null;
+  _toSelection = null;
+  _lastResults = null;
   renderSettings();
-  renderHome();
+  updatePickerButtons();
+  document.getElementById('routeResults').innerHTML = '';
 }
 
-// ─── GROUP EDITOR ────────────────────────────────────────────
-let _editingGroupId = null;
+// ─── LOCATION EDITOR ────────────────────────────────────────
+let _editingLocId = null;
 
-function showGroupEditor(groupId) {
-  _editingGroupId = groupId;
-  const group = config.groups.find(g => g.id === groupId);
-  if (!group) return;
-  document.getElementById('navTitle').textContent = group.name;
-  document.getElementById('navSubtitle').textContent = 'Group settings';
-  renderGroupEditor(groupId);
-  pushScreen('groupEditorScreen');
+function addNewLocation() {
+  const id = 'loc_' + Date.now();
+  config.locations.push({ id, name: 'New Location', lat: null, lon: null, address: '', emoji: '' });
+  saveConfig();
+  openLocationEditor(id);
 }
 
-function renderGroupEditor(groupId) {
-  const group = config.groups.find(g => g.id === groupId);
-  if (!group) return;
-  const sc = document.getElementById('groupEditorContainer');
-  const groupFavs = group.favIds
-    .map(id => config.favourites.find(f => f.id === id))
-    .filter(Boolean);
+function openLocationEditor(locId) {
+  _editingLocId = locId;
+  const loc = config.locations.find(l => l.id === locId);
+  if (!loc) return;
+  document.getElementById('navTitle').textContent = loc.name;
+  document.getElementById('navSubtitle').textContent = 'Edit location';
+  renderLocationEditor(locId);
+  pushScreen('locationEditorScreen');
+}
+
+function renderLocationEditor(locId) {
+  const loc = config.locations.find(l => l.id === locId);
+  if (!loc) return;
+  const sc = document.getElementById('locationEditorContainer');
 
   let h = '';
 
-  // Name
-  h += '<div class="section-label">Group Name</div>';
-  h += `<div class="settings-field"><input type="text" class="settings-input" id="geNameInput" value="${attrEsc(group.name)}" maxlength="40" placeholder="e.g. Home → Work"></div>`;
-
-  // Postcodes
-  h += '<div class="section-label">Locations</div>';
-  h += '<div class="group-editor-postcode-row">';
-  h += `<div><div class="group-editor-postcode-label">From postcode</div><input type="text" class="group-editor-postcode-input" id="geFromInput" value="${attrEsc(group.fromPostcode || '')}" placeholder="e.g. N1 9GU" autocorrect="off" spellcheck="false"></div>`;
-  h += `<div><div class="group-editor-postcode-label">To postcode</div><input type="text" class="group-editor-postcode-input" id="geToInput" value="${attrEsc(group.toPostcode || '')}" placeholder="e.g. EC1A 1BB" autocorrect="off" spellcheck="false"></div>`;
+  // Name + Emoji row
+  h += '<div class="loc-editor-section">';
+  h += '<div class="loc-editor-label">Name & Icon</div>';
+  h += '<div class="emoji-input-row">';
+  h += `<input type="text" class="emoji-input" id="locEditorEmoji" value="${attrEsc(loc.emoji || '')}" maxlength="10" placeholder="📍">`;
+  h += `<input type="text" class="settings-input" id="locEditorName" value="${attrEsc(loc.name)}" maxlength="30" placeholder="e.g. Home, Office, Gym" style="flex:1">`;
+  h += '</div>';
+  h += `<div class="settings-note">Tap the icon box to type a custom emoji.</div>`;
   h += '</div>';
 
-  // Save details button
-  h += `<button class="group-editor-save-btn" onclick="saveGroupDetails('${attrEsc(groupId)}')">Save Details</button>`;
-
-  // Refresh routes button
-  h += `<button class="group-editor-refresh-btn" onclick="refreshGroupRoutes('${attrEsc(groupId)}')">🔄 Find more routes for this group</button>`;
-
-  // Routes in group
-  h += '<div class="section-label">Routes in this Group</div>';
-  if (groupFavs.length === 0) {
-    h += '<div style="background:var(--bg-card);border-radius:var(--radius);padding:20px;text-align:center;font-size:14px;color:var(--text-tertiary)">No routes yet</div>';
+  // Current address
+  h += '<div class="loc-editor-section">';
+  h += '<div class="loc-editor-label">Address</div>';
+  if (loc.lat != null) {
+    h += `<div class="loc-editor-current">📍 ${esc(loc.address || `${loc.lat.toFixed(5)}, ${loc.lon.toFixed(5)}`)}</div>`;
   } else {
-    h += '<div id="favSettingsList">';
-    for (let i = 0; i < groupFavs.length; i++) {
-      const fav = groupFavs[i];
-      h += `
-        <div class="fav-setting-item" data-fav-id="${attrEsc(fav.id)}" data-fav-idx="${i}">
-          <button class="drag-handle" data-drag-idx="${i}" title="Drag to reorder">☰</button>
-          <span class="fav-setting-badge">${esc(fav.line)}</span>
-          <div class="fav-setting-info">
-            <div class="fav-setting-name">${esc(fav.label || fav.stopName)}</div>
-            <div class="fav-setting-sub">📍 ${esc(fav.stopName)}</div>
-          </div>
-          <button class="fav-setting-delete" data-del-id="${attrEsc(fav.id)}" title="Remove">✕</button>
-        </div>`;
-    }
-    h += '</div>';
+    h += `<div class="loc-editor-current" style="color:var(--text-tertiary)">No address set — search below</div>`;
   }
-  h += '<div class="settings-gap"></div>';
+  h += '<div class="loc-editor-search-wrap">';
+  h += `<input type="text" class="settings-input" id="locEditorSearch" placeholder="Search address or postcode" autocomplete="off" autocorrect="off" spellcheck="false">`;
+  h += `<div class="photon-results" id="locEditorResults" style="display:none"></div>`;
+  h += '</div>';
+  h += `<div class="loc-editor-saved-flash" id="locEditorFlash">✓ Saved</div>`;
+  h += '</div>';
 
-  // Delete group
-  h += `<button class="danger-btn" onclick="deleteGroup('${attrEsc(groupId)}')">Delete This Group</button>`;
+  // Delete
+  h += `<button class="danger-btn" onclick="deleteLocationEditor()">Delete This Location</button>`;
   h += '<div class="settings-gap"></div>';
 
   sc.innerHTML = h;
-  const list = document.getElementById('favSettingsList');
-  if (list) initDnd(list, groupId);
+
+  // Helper: show temporal flash with a custom message
+  function showEditorFlash(msg) {
+    const flash = document.getElementById('locEditorFlash');
+    if (!flash) return;
+    flash.textContent = '✓ ' + msg;
+    flash.classList.remove('show');
+    void flash.offsetWidth; // force reflow for re-trigger
+    flash.classList.add('show');
+    clearTimeout(flash._timer);
+    flash._timer = setTimeout(() => flash.classList.remove('show'), 2000);
+  }
+
+  // Helper: test if a string is a single emoji (including compound emoji like flags, skin tones)
+  function isSingleEmoji(str) {
+    if (!str) return true; // empty is fine
+    const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)(\u200D(\p{Emoji_Presentation}|\p{Emoji}\uFE0F))*$/u;
+    // Also allow emoji with skin tone modifiers and flags
+    const segments = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(str)];
+    if (segments.length !== 1) return false;
+    const char = segments[0].segment;
+    return /\p{Emoji_Presentation}/u.test(char) || /\p{Emoji}\uFE0F/u.test(char);
+  }
+
+  // Helper: strip emoji characters from a string (for name input)
+  function stripEmoji(str) {
+    return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F\u200D\u20E3\uFE0F]/gu, '').trim();
+  }
+
+  // Auto-save name on blur — strip any emoji from name
+  const nameInput = document.getElementById('locEditorName');
+  nameInput.addEventListener('blur', () => {
+    let name = stripEmoji((nameInput.value || '').trim());
+    nameInput.value = name; // visual feedback of stripping
+    if (name && name !== loc.name) {
+      loc.name = name;
+      saveConfig();
+      document.getElementById('navTitle').textContent = name;
+      showEditorFlash('Name saved');
+    }
+  });
+
+  // Auto-save emoji on input — validate single emoji only
+  const emojiInput = document.getElementById('locEditorEmoji');
+  emojiInput.addEventListener('input', () => {
+    const val = emojiInput.value.trim();
+    if (val && !isSingleEmoji(val)) {
+      // Not a valid single emoji — revert to last good value
+      emojiInput.value = loc.emoji || '';
+      return;
+    }
+    loc.emoji = val;
+    saveConfig();
+    if (val) showEditorFlash('Icon saved');
+  });
+
+  // Wire up Photon search
+  const searchInput = document.getElementById('locEditorSearch');
+  const resultsEl = document.getElementById('locEditorResults');
+  setupPhotonInput(searchInput, resultsEl, r => {
+    loc.lat = r.lat;
+    loc.lon = r.lon;
+    loc.address = r.address || r.name;
+    saveConfig();
+    showEditorFlash('Address updated');
+    // Update the current address display
+    const currentEl = sc.querySelector('.loc-editor-current');
+    if (currentEl) {
+      currentEl.style.color = '';
+      currentEl.textContent = '📍 ' + (loc.address || `${loc.lat.toFixed(5)}, ${loc.lon.toFixed(5)}`);
+    }
+    searchInput.value = '';
+    // Refresh weather if Home changed
+    if (loc.id === 'loc_home') loadWeather();
+  });
 }
 
-function saveGroupDetails(groupId) {
-  const group = config.groups.find(g => g.id === groupId);
-  if (!group) return;
-  group.name        = (document.getElementById('geNameInput')?.value || '').trim() || group.name;
-  group.fromPostcode = (document.getElementById('geFromInput')?.value || '').trim().toUpperCase();
-  group.toPostcode   = (document.getElementById('geToInput')?.value || '').trim().toUpperCase();
+
+function deleteLocationEditor() {
+  const loc = config.locations.find(l => l.id === _editingLocId);
+  if (!loc) return;
+  if (!confirm(`Delete "${loc.name}"? This cannot be undone.`)) return;
+  config.locations = config.locations.filter(l => l.id !== _editingLocId);
+  // Clear selections that referenced this location
+  if (_fromSelection?.locId === _editingLocId) _fromSelection = null;
+  if (_toSelection?.locId === _editingLocId) _toSelection = null;
   saveConfig();
-  document.getElementById('navTitle').textContent = group.name;
-  // Brief feedback
-  const btn = document.querySelector('.group-editor-save-btn');
-  if (btn) { btn.textContent = '✓ Saved'; btn.disabled = true; setTimeout(() => { btn.textContent = 'Save Details'; btn.disabled = false; }, 1500); }
-  renderSettings();
-  renderHome();
-}
-
-function refreshGroupRoutes(groupId) {
-  openGroupWizard(groupId);
-}
-
-function deleteGroup(groupId) {
-  if (!confirm('Delete this group? Routes inside will remain in "Other Routes" on the home screen.')) return;
-  config.groups = config.groups.filter(g => g.id !== groupId);
-  saveConfig();
-  renderSettings();
-  renderHome();
+  updatePickerButtons();
   goBack();
 }
 
-// One-time delegated handler for group editor (delete route from group)
-document.getElementById('groupEditorContainer').addEventListener('click', e => {
-  const del = e.target.closest('[data-del-id]');
-  if (del) deleteFavFromGroup(del.dataset.delId);
-});
-
-function deleteFavFromGroup(favId) {
-  if (!confirm('Remove this route?')) return;
-  // Remove from group's favIds
-  if (_editingGroupId) {
-    const group = config.groups.find(g => g.id === _editingGroupId);
-    if (group) group.favIds = group.favIds.filter(id => id !== favId);
-  }
-  // Remove from favourites entirely
-  config.favourites = config.favourites.filter(f => f.id !== favId);
-  delete _cardStates[favId];
-  saveConfig();
-  renderGroupEditor(_editingGroupId);
-  renderHome();
-}
-
-// ─── DRAG AND DROP (GROUP EDITOR) ───────────────────────────
-let _dnd = null;
-
-function initDnd(list, groupId = null) {
-  list.addEventListener('pointerdown', e => {
-    const handle = e.target.closest('.drag-handle');
-    if (!handle) return;
-    e.preventDefault();
-    const item = handle.closest('.fav-setting-item');
-    if (!item) return;
-    const idx = parseInt(item.dataset.favIdx);
-    const items = [...list.querySelectorAll('.fav-setting-item')];
-    const rect = item.getBoundingClientRect();
-    const ghost = item.cloneNode(true);
-    ghost.style.cssText = `position:fixed;z-index:9999;pointer-events:none;width:${rect.width}px;left:${rect.left}px;top:${rect.top}px;opacity:0.9;border-radius:var(--radius);background:var(--bg-card-hover);box-shadow:0 8px 24px rgba(0,0,0,0.5);`;
-    document.body.appendChild(ghost);
-    item.classList.add('dnd-dragging');
-    _dnd = { idx, items, item, ghost, startY: e.clientY, ghostTop: rect.top, targetIdx: idx, groupId };
-    list.setPointerCapture(e.pointerId);
-  });
-
-  list.addEventListener('pointermove', e => {
-    if (!_dnd) return;
-    const dy = e.clientY - _dnd.startY;
-    _dnd.ghost.style.top = (_dnd.ghostTop + dy) + 'px';
-    let newTarget = _dnd.idx;
-    _dnd.items.forEach((el, i) => {
-      const r = el.getBoundingClientRect();
-      if (e.clientY > r.top + r.height * 0.5) newTarget = i;
-    });
-    _dnd.targetIdx = newTarget;
-    _dnd.items.forEach(el => { el.classList.remove('dnd-over-top', 'dnd-over-bot'); });
-    if (newTarget !== _dnd.idx) {
-      const dir = newTarget > _dnd.idx ? 'dnd-over-bot' : 'dnd-over-top';
-      _dnd.items[newTarget].classList.add(dir);
-    }
-  });
-
-  list.addEventListener('pointerup', () => {
-    if (!_dnd) return;
-    const { idx, targetIdx, item, ghost, items, groupId: gId } = _dnd;
-    ghost.remove();
-    item.classList.remove('dnd-dragging');
-    items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
-    if (targetIdx !== idx && gId) {
-      const group = config.groups.find(g => g.id === gId);
-      if (group) {
-        const [moved] = group.favIds.splice(idx, 1);
-        group.favIds.splice(targetIdx, 0, moved);
-        saveConfig();
-        renderGroupEditor(gId);
-        renderHome();
-      }
-    }
-    _dnd = null;
-  });
-
-  list.addEventListener('pointercancel', () => {
-    if (!_dnd) return;
-    _dnd.ghost.remove();
-    _dnd.item.classList.remove('dnd-dragging');
-    _dnd.items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
-    _dnd = null;
-  });
-}
-
-// ─── DRAG AND DROP (SETTINGS — GROUP ORDER) ─────────────────
-function initGroupsDnd(containerEl) {
-  containerEl.addEventListener('pointerdown', e => {
-    const handle = e.target.closest('.drag-handle');
-    if (!handle) return;
-    e.preventDefault();
-    const item = handle.closest('.settings-group-item');
-    if (!item) return;
-    const idx = parseInt(item.dataset.groupIdx);
-    const items = [...containerEl.querySelectorAll('.settings-group-item')];
-    const rect = item.getBoundingClientRect();
-    const ghost = item.cloneNode(true);
-    ghost.style.cssText = `position:fixed;z-index:9999;pointer-events:none;width:${rect.width}px;left:${rect.left}px;top:${rect.top}px;opacity:0.9;border-radius:var(--radius);background:var(--bg-card-hover);box-shadow:0 8px 24px rgba(0,0,0,0.5);`;
-    document.body.appendChild(ghost);
-    item.classList.add('dnd-dragging');
-    _dnd = { idx, items, item, ghost, startY: e.clientY, ghostTop: rect.top, targetIdx: idx };
-    containerEl.setPointerCapture(e.pointerId);
-  });
-
-  containerEl.addEventListener('pointermove', e => {
-    if (!_dnd) return;
-    const dy = e.clientY - _dnd.startY;
-    _dnd.ghost.style.top = (_dnd.ghostTop + dy) + 'px';
-    let newTarget = _dnd.idx;
-    _dnd.items.forEach((el, i) => {
-      const r = el.getBoundingClientRect();
-      if (e.clientY > r.top + r.height * 0.5) newTarget = i;
-    });
-    _dnd.targetIdx = newTarget;
-    _dnd.items.forEach(el => { el.classList.remove('dnd-over-top', 'dnd-over-bot'); });
-    if (newTarget !== _dnd.idx) {
-      _dnd.items[newTarget].classList.add(newTarget > _dnd.idx ? 'dnd-over-bot' : 'dnd-over-top');
-    }
-  });
-
-  containerEl.addEventListener('pointerup', () => {
-    if (!_dnd) return;
-    const { idx, targetIdx, item, ghost, items } = _dnd;
-    ghost.remove();
-    item.classList.remove('dnd-dragging');
-    items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
-    if (targetIdx !== idx) {
-      const [moved] = config.groups.splice(idx, 1);
-      config.groups.splice(targetIdx, 0, moved);
-      saveConfig();
-      renderSettings();
-      renderHome();
-    }
-    _dnd = null;
-  });
-
-  containerEl.addEventListener('pointercancel', () => {
-    if (!_dnd) return;
-    _dnd.ghost.remove();
-    _dnd.item.classList.remove('dnd-dragging');
-    _dnd.items.forEach(el => el.classList.remove('dnd-over-top', 'dnd-over-bot'));
-    _dnd = null;
-  });
-}
-
-// ─── LOCATION ────────────────────────────────────────────────
-const PROXIMITY_METRES = 400;
-
-async function geocodePostcode(pc) {
-  const key = pc.toUpperCase().replace(/\s/g, '');
-  if (_postcodeCache[key]) return _postcodeCache[key];
-  try {
-    const r = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(key)}`);
-    if (!r.ok) return null;
-    const d = await r.json();
-    if (d.result) {
-      const coords = { lat: d.result.latitude, lon: d.result.longitude };
-      _postcodeCache[key] = coords;
-      return coords;
-    }
-  } catch(e) {}
-  return null;
-}
-
-// Compass bearing in degrees (0=N, 90=E, 180=S, 270=W) from point 1 to point 2
+// ─── GEO UTILS ──────────────────────────────────────────────
 function calculateBearing(lat1, lon1, lat2, lon2) {
   const toRad = d => d * Math.PI / 180;
   const dLon = toRad(lon2 - lon1);
@@ -1742,84 +1469,14 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
 
 function haversineMetres(lat1, lon1, lat2, lon2) {
   const R = 6371000;
-  const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(Δφ/2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) ** 2;
+  const p1 = lat1 * Math.PI / 180, p2 = lat2 * Math.PI / 180;
+  const dp = (lat2 - lat1) * Math.PI / 180;
+  const dl = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dp/2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Apply location highlighting using the already-cached _userLocation.
-// No geolocation call — safe to call after every renderHome() without triggering prompts.
-async function applyLocationHighlight() {
-  if (!config.locationEnabled || !_userLocation) return;
-  const list = document.getElementById('routesList');
-  const isFirstTime = !_locationCollapseApplied;
-
-  // Step 1: resolve nearby status for every group (geocode postcodes in parallel)
-  const nearbySet = new Set();
-  await Promise.all(config.groups.map(async group => {
-    if (!group.fromPostcode) return;
-    const coords = await geocodePostcode(group.fromPostcode);
-    if (!coords) return;
-    const dist = haversineMetres(_userLocation.lat, _userLocation.lon, coords.lat, coords.lon);
-    if (dist < PROXIMITY_METRES) nearbySet.add(group.id);
-  }));
-
-  // Step 2: update visual indicators + first-time collapse for non-nearby groups
-  for (const group of config.groups) {
-    const nearby = nearbySet.has(group.id);
-    const dot = document.getElementById(`group-dot-${group.id}`);
-    const lbl = document.getElementById(`group-lbl-${group.id}`);
-    if (dot) dot.classList.toggle('visible', nearby);
-    if (lbl) lbl.classList.toggle('nearby', nearby);
-    if (isFirstTime && !nearby) {
-      _collapsedGroups.add(group.id);
-      const section = document.getElementById(`group-section-${group.id}`);
-      const chev = document.getElementById(`group-chev-${group.id}`);
-      if (section) section.classList.add('collapsed');
-      if (chev) { chev.textContent = '▸'; chev.title = 'Expand'; }
-    }
-  }
-
-  // Step 3: re-order DOM respecting both location priority and user-defined group order.
-  // Nearby groups come first (in config.groups order), then non-nearby (in config.groups order).
-  if (list && nearbySet.size > 0) {
-    const addBtn = list.querySelector('.group-add-btn');
-    const sorted = [
-      ...config.groups.filter(g => nearbySet.has(g.id)),
-      ...config.groups.filter(g => !nearbySet.has(g.id)),
-    ];
-    for (const group of sorted) {
-      const section = document.getElementById(`group-section-${group.id}`);
-      if (section) list.insertBefore(section, addBtn || null);
-    }
-  }
-
-  if (isFirstTime) _locationCollapseApplied = true;
-}
-
-// Fetch a fresh position (may prompt if not yet granted), cache it, then apply.
-// Only call this when we actually need to re-acquire the position:
-//   - on init, - when user enables the toggle, - periodically in background.
-function updateLocationHighlight() {
-  if (!config.locationEnabled || !navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(async pos => {
-    _userLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-    await applyLocationHighlight();
-  }, err => {
-    // If permission denied, auto-revert the setting
-    if (err.code === 1 /* PERMISSION_DENIED */) {
-      config.locationEnabled = false;
-      _userLocation = null;
-      saveConfig();
-      const toggle = document.getElementById('locationToggle');
-      if (toggle) toggle.checked = false;
-    }
-  }, { maximumAge: 120000, timeout: 10000 });
-}
-
-// ─── UTILS ──────────────────────────────────────────────────
+// ─── HTML UTILS ─────────────────────────────────────────────
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -1827,72 +1484,88 @@ function attrEsc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,'');
 }
 
-// ─── STOP NAME ENRICHMENT ────────────────────────────────────
-// One-time background migration: fetch the stop indicator letter (e.g. "Stop S")
-// for any saved route that has a valid pole ID but no stop letter in its name yet.
-async function enrichStopNames() {
-  // Enrich any 490-prefix stop that is missing a stop letter OR missing lat/lon coords
-  const toEnrich = config.favourites.filter(f =>
-    f.stopId && /^490\d/i.test(f.stopId) &&
-    (!/\(Stop /i.test(f.stopName || '') || f.stopLat == null)
-  );
-  if (!toEnrich.length) return;
-  const key = config.tflKey ? `?app_key=${encodeURIComponent(config.tflKey)}` : '';
-  let changed = false;
-  for (const fav of toEnrich) {
-    try {
-      const r = await fetch(
-        `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(fav.stopId)}${key}`,
-        { mode: 'cors', headers: { 'Accept': 'application/json' } }
-      );
-      if (!r.ok) continue;
-      const data = await r.json();
-      const base = (data.commonName || fav.stopName || '').replace(/ Underground Station| Rail Station/gi, '');
-      const ind  = data.indicator || '';
-      if (base && ind && !/\(Stop /i.test(fav.stopName || '')) {
-        fav.stopName = `${base} (${ind})`; changed = true;
-      }
-      if (data.lat != null && fav.stopLat == null) {
-        fav.stopLat = data.lat; fav.stopLon = data.lon; changed = true;
-      }
-    } catch(e) {}
-  }
-  if (changed) { saveConfig(); renderHome(); }
+// ─── ONBOARDING ─────────────────────────────────────────────
+function completeOnboarding() {
+  config.onboardingSeen = true;
+  saveConfig();
+  navStack = ['homeScreen'];
+  showScreen('homeScreen');
+  updatePickerButtons();
+  loadWeather();
 }
 
-// Retroactively estimate walk times for existing favs that have stop coords but no walkMins.
-// Uses haversine (straight-line × 1.3 detour factor) at 80 m/min walking speed.
-async function enrichWalkTimes() {
-  const needsWalk = config.favourites.filter(f => f.walkMins == null && f.stopLat != null);
-  if (!needsWalk.length) return;
-  // Geocode each unique fromPostcode once
-  const coordCache = {};
-  for (const group of config.groups) {
-    const pc = group.fromPostcode;
-    if (!pc || coordCache[pc] !== undefined) continue;
-    coordCache[pc] = await geocodePostcode(pc);
+// ─── PWA UPDATE CHECK ───────────────────────────────────────
+let _updateToastShown = false;
+
+async function checkForUpdates(manual = false) {
+  try {
+    const r = await fetch(window.location.href + '?_nocache=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) { if (manual) alert('Could not check for updates.'); return; }
+    const html = await r.text();
+    const match = html.match(/const APP_VERSION\s*=\s*'([^']+)'/);
+    if (!match) { if (manual) alert('Could not determine remote version.'); return; }
+    const remote = match[1];
+    if (remote !== APP_VERSION) {
+      showUpdateToast(remote);
+    } else if (manual) {
+      alert('You are on the latest version (' + APP_VERSION + ').');
+    }
+  } catch(e) {
+    if (manual) alert('Update check failed. Check your connection.');
   }
-  let changed = false;
-  for (const fav of needsWalk) {
-    const group = config.groups.find(g => g.favIds.includes(fav.id));
-    if (!group?.fromPostcode) continue;
-    const coords = coordCache[group.fromPostcode];
-    if (!coords) continue;
-    const dist = haversineMetres(coords.lat, coords.lon, fav.stopLat, fav.stopLon);
-    fav.walkMins = Math.max(0, Math.round(dist * 1.3 / 80)); // ~80 m/min, 1.3× detour
-    changed = true;
-  }
-  if (changed) { saveConfig(); renderHome(); }
+}
+
+function showUpdateToast(remoteVersion) {
+  if (_updateToastShown) return;
+  _updateToastShown = true;
+  const toast = document.createElement('div');
+  toast.className = 'update-toast';
+  toast.id = 'updateToast';
+  toast.innerHTML = `
+    <div class="update-toast-text"><strong>Update available</strong> · ${esc(remoteVersion)}</div>
+    <button class="update-toast-btn" onclick="performUpdate()">Update</button>
+    <button class="update-toast-dismiss" onclick="dismissUpdateToast()">✕</button>
+  `;
+  document.body.appendChild(toast);
+}
+
+function dismissUpdateToast() {
+  const toast = document.getElementById('updateToast');
+  if (toast) toast.remove();
+  _updateToastShown = false;
+}
+
+function performUpdate() {
+  // Reload to get latest version; loadConfig will handle data version checks
+  window.location.reload();
 }
 
 // ─── INIT ───────────────────────────────────────────────────
-async function init() {
-  renderHome();
+function init() {
+  if (!config.onboardingSeen) {
+    navStack = ['onboardingScreen'];
+    showScreen('onboardingScreen');
+    return;
+  }
+
+  navStack = ['homeScreen'];
+  showScreen('homeScreen');
+
+  // Restore last selections
+  if (config.lastFromId) {
+    const loc = config.locations.find(l => l.id === config.lastFromId);
+    if (loc && loc.lat != null) _fromSelection = { name: loc.name, lat: loc.lat, lon: loc.lon, locId: loc.id, address: loc.address };
+  }
+  if (config.lastToId) {
+    const loc = config.locations.find(l => l.id === config.lastToId);
+    if (loc && loc.lat != null) _toSelection = { name: loc.name, lat: loc.lat, lon: loc.lon, locId: loc.id, address: loc.address };
+  }
+  updatePickerButtons();
   loadWeather();
-  if (config.favourites.length > 0) loadAllCards();
-  startAutoRefresh();
-  if (config.locationEnabled) updateLocationHighlight();
-  enrichStopNames().then(enrichWalkTimes); // enrich stop names, then estimate walk times for legacy favs
+
+  // Check for updates after 5 seconds, then every 4 hours
+  setTimeout(() => checkForUpdates(), 5000);
+  setInterval(() => checkForUpdates(), 4 * 60 * 60 * 1000);
 }
 
 init();

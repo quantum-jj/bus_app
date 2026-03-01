@@ -5,6 +5,7 @@
 - **Increment the minor version (Y) by 1** for every change that is NOT a bug fix. Small tweaks should not lead to an increment 
 - Bug fixes (regressions, incorrect behaviour) do **not** bump the version
 - Example: v1.0.0 → v1.1.0 when adding a new feature or behaviour change
+- Please also update the README.md file if it requires updating
 
 ## Git
 - **Do not offer to push to git** — the user handles all git commits and pushes themselves
