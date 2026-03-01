@@ -1,4 +1,4 @@
-# Bus Checker — v2.2.0
+# Bus Checker — v2.5.0
 
 A lightweight London bus arrival checker PWA. Save your favourite locations, pick an origin and destination, and get live bus arrivals from nearby stops — no saved routes, everything is live. Designed as a quick daily commute companion, not a replacement for Citymapper or Google Maps.
 

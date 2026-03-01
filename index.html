@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Buses">
 <meta name="theme-color" content="#000000">
 <title>Bus Checker</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000'/><text y='.9em' font-size='80' x='10'>🚌</text></svg>">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQnVzIENoZWNrZXIiLCJzaG9ydF9uYW1lIjoiQnVzZXMiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzAwMDAwMCIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCJ9">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -63,15 +64,15 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* ── Onboarding ── */
-.onboarding-hero { text-align:center; padding:48px 24px; }
-.onboarding-icon { font-size:72px; margin-bottom:16px; }
-.onboarding-title { font-size:28px; font-weight:700; margin-bottom:8px; }
-.onboarding-body { font-size:15px; color:var(--text-secondary); line-height:1.6; margin-bottom:32px; max-width:320px; margin-left:auto; margin-right:auto; }
-.onboarding-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:var(--blue); color:white; border:none; border-radius:14px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
+.onboarding-hero { text-align:center; padding:32px 24px 24px; display:flex; flex-direction:column; align-items:center; min-height:100%; justify-content:center; }
+.onboarding-icon { font-size:64px; margin-bottom:12px; }
+.onboarding-title { font-size:26px; font-weight:700; margin-bottom:6px; }
+.onboarding-body { font-size:14px; color:var(--text-secondary); line-height:1.5; margin-bottom:20px; max-width:300px; }
+.onboarding-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:var(--blue); color:white; border:none; border-radius:14px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; width:100%; justify-content:center; max-width:300px; }
 .onboarding-btn:active { opacity:0.8; }
-.onboarding-features { display:flex; flex-direction:column; gap:16px; margin-bottom:36px; text-align:left; max-width:300px; margin-left:auto; margin-right:auto; }
-.onboarding-feature { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--text-secondary); line-height:1.4; }
-.onboarding-feature-icon { font-size:20px; flex-shrink:0; margin-top:-2px; }
+.onboarding-features { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; text-align:left; max-width:300px; width:100%; }
+.onboarding-feature { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text-secondary); line-height:1.3; }
+.onboarding-feature-icon { font-size:18px; flex-shrink:0; }
 
 /* ── Route Picker ── */
 .route-picker-card { background:var(--bg-card); border-radius:var(--radius); padding:14px; margin-bottom:20px; }
@@ -165,7 +166,15 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .arrival-good { background:rgba(48,209,88,0.15); color:var(--green); }
 
 /* ── Settings ── */
-.settings-field { margin-bottom:24px; }
+.settings-section { margin-bottom:32px; }
+.settings-section-header { font-size:13px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; padding:0 4px 10px; }
+.settings-card { background:var(--bg-card); border-radius:var(--radius); overflow:hidden; margin-bottom:10px; }
+.settings-card-row { display:flex; align-items:center; justify-content:space-between; padding:13px 14px; border-bottom:0.5px solid var(--separator); gap:12px; }
+.settings-card-row:last-child { border-bottom:none; }
+.settings-card-row-label { font-size:15px; color:var(--text-primary); flex:1; }
+.settings-card-row-value { font-size:15px; color:var(--text-secondary); }
+.settings-card-row-select { background:none; border:none; color:var(--blue); font-size:15px; font-family:inherit; outline:none; cursor:pointer; text-align:right; }
+.settings-field { margin-bottom:10px; }
 .settings-input { width:100%; padding:12px 14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
 .settings-input:focus { border-color:var(--blue); }
 .settings-input::placeholder { color:var(--text-tertiary); }
@@ -175,13 +184,27 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .save-btn { width:100%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity 0.2s; }
 .save-btn:active { opacity:0.8; }
 .save-btn:disabled { opacity:0.5; pointer-events:none; }
-.danger-btn { width:100%; padding:14px; background:transparent; border:1px solid var(--red); border-radius:12px; color:var(--red); font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; margin-top:8px; }
+.settings-link-btn { width:100%; padding:14px; background:var(--bg-card); border:1px solid var(--separator); border-radius:12px; color:var(--blue); font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; text-align:left; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.settings-link-btn:active { opacity:0.7; }
+.settings-more-btn { width:100%; padding:11px 14px; background:none; border:1px solid var(--separator); border-radius:12px; color:var(--text-secondary); font-size:14px; font-weight:500; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:16px; transition:color 0.15s; }
+.settings-more-btn:active { color:var(--text-primary); }
+.settings-more-btn .more-chevron { font-size:12px; transition:transform 0.25s; display:inline-block; }
+.settings-more-btn.open .more-chevron { transform:rotate(180deg); }
+.settings-advanced { overflow:hidden; max-height:0; transition:max-height 0.35s ease; }
+.settings-advanced.open { max-height:2000px; transition:max-height 0.5s ease; }
+.danger-btn { width:100%; padding:14px; background:transparent; border:1px solid var(--red); border-radius:12px; color:var(--red); font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; margin-top:0; }
 .danger-btn:active { opacity:0.7; }
-.version-label { text-align:center; font-size:12px; color:var(--text-tertiary); padding:32px 0 8px; }
-.settings-gap { height:24px; }
+.version-label { text-align:center; font-size:12px; color:var(--text-tertiary); padding:24px 0 8px; }
+.settings-gap { height:8px; }
+.settings-api-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--bg-card); border-radius:10px; margin-bottom:8px; }
+.settings-api-row-info { flex:1; min-width:0; }
+.settings-api-row-name { font-size:15px; font-weight:500; }
+.settings-api-row-desc { font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+.settings-api-row-status { font-size:12px; font-weight:600; padding:3px 8px; border-radius:20px; flex-shrink:0; margin-left:8px; }
+.settings-api-status-free { background:rgba(48,209,88,0.15); color:var(--green); }
+.settings-api-status-key { background:rgba(10,132,255,0.15); color:var(--blue); }
 
 /* ── Settings: location list ── */
-.settings-loc-item { display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
 .settings-loc-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
 .settings-loc-item:last-child { border-bottom:none; border-radius:0 0 var(--radius) var(--radius); }
 .settings-loc-item:only-child { border-radius:var(--radius); }
@@ -201,8 +224,18 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .loc-editor-search-wrap { position:relative; }
 .loc-editor-saved-flash { font-size:13px; color:var(--green); padding:6px 0; font-weight:500; opacity:0; transition:opacity 0.3s; }
 .loc-editor-saved-flash.show { opacity:1; }
-.emoji-input-row { display:flex; align-items:center; gap:10px; }
-.emoji-input { width:52px; font-size:24px; text-align:center; padding:8px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; line-height:1; }
+.emoji-input-row { display:flex; align-items:center; gap:10px; position:relative; }
+.emoji-input { width:52px; font-size:24px; text-align:center; padding:8px; background:var(--bg-card); border:1px solid var(--separator); border-radius:10px; line-height:1; cursor:pointer; }
+.emoji-dropdown { position:absolute; top:calc(100% + 6px); left:0; z-index:300; background:var(--bg-card); border:1px solid var(--separator); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:6px; width:240px; box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+.emoji-dropdown.hidden { display:none; }
+.emoji-option { font-size:26px; padding:4px; border-radius:8px; cursor:pointer; line-height:1; transition:background 0.1s; }
+.emoji-option:hover, .emoji-option:active { background:var(--bg-card-hover); }
+/* Drag-and-drop location list */
+.settings-loc-item { display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg-card); border-bottom:0.5px solid var(--separator); cursor:pointer; transition:background 0.15s; -webkit-user-select:none; user-select:none; }
+.settings-loc-item.dragging { opacity:0.4; }
+.settings-loc-item.drag-over { background:var(--bg-card-hover); border-top:2px solid var(--blue); }
+.drag-handle { color:var(--text-tertiary); font-size:18px; cursor:grab; padding:0 4px 0 0; flex-shrink:0; touch-action:none; }
+.drag-handle:active { cursor:grabbing; }
 
 /* ── Location toggle ── */
 .location-toggle-row { display:flex; align-items:center; gap:14px; padding:14px; background:var(--bg-card); border-radius:var(--radius); }
@@ -243,13 +276,14 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
     <div class="onboarding-hero">
       <div class="onboarding-icon">🚌</div>
       <div class="onboarding-title">Quick Bus Checker</div>
-      <div class="onboarding-body">
-        A lightweight companion for checking London bus arrivals at a glance. Not here to replace Citymapper or Google Maps — just your daily commute, simplified.
-      </div>
+      <div class="onboarding-body">Your daily London commute, simplified.</div>
       <div class="onboarding-features">
-        <div class="onboarding-feature"><span class="onboarding-feature-icon">📍</span> Save your favourite locations</div>
-        <div class="onboarding-feature"><span class="onboarding-feature-icon">🔍</span> Look up live bus arrivals between any two points</div>
-        <div class="onboarding-feature"><span class="onboarding-feature-icon">🚶</span> See walking times to nearby stops</div>
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">📍</span> Save favourite locations</div>
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">🔍</span> Live bus arrivals between any two points</div>
+        <div class="onboarding-feature"><span class="onboarding-feature-icon">🚶</span> Walking times to nearby stops</div>
+      </div>
+      <div style="padding:10px 14px;background:rgba(255,159,10,0.12);border-radius:10px;border:1px solid rgba(255,159,10,0.25);font-size:13px;color:var(--orange);text-align:left;line-height:1.4;max-width:300px;width:100%;margin-bottom:20px">
+        🇬🇧 <strong>London only</strong> — uses the TfL bus network exclusively.
       </div>
       <button class="onboarding-btn" onclick="completeOnboarding()">Get Started →</button>
     </div>
@@ -335,7 +369,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 </div>
 
 <script>
-const APP_VERSION = 'v2.3.0';
+const APP_VERSION = 'v2.5.0';
 const DATA_VERSION = 1;
 
 // ─── DEFAULTS ───────────────────────────────────────────────
@@ -1196,15 +1230,17 @@ function renderSettings() {
   const sc = document.getElementById('settingsContainer');
   let h = '';
 
-  // ── Locations ──
-  h += '<div class="section-label">Saved Locations</div>';
+  // ══ SECTION 1: Locations ══
+  h += '<div class="settings-section">';
+  h += '<div class="settings-section-header">Saved Locations</div>';
   h += '<div id="settingsLocList">';
   for (const loc of config.locations) {
     const icon = loc.emoji || (loc.id === 'loc_home' ? '🏠' : loc.id === 'loc_work' ? '💼' : '⭐');
     const sub = loc.lat != null
       ? (loc.address || `${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}`)
       : 'Not set — tap to configure';
-    h += `<div class="settings-loc-item" data-edit-loc="${attrEsc(loc.id)}">
+    h += `<div class="settings-loc-item" draggable="true" data-edit-loc="${attrEsc(loc.id)}" data-loc-id="${attrEsc(loc.id)}">
+      <div class="drag-handle" data-drag-handle>⠿</div>
       <div class="settings-loc-icon">${icon}</div>
       <div class="settings-loc-info">
         <div class="settings-loc-name">${esc(loc.name)}</div>
@@ -1214,63 +1250,202 @@ function renderSettings() {
     </div>`;
   }
   h += '</div>';
+  h += `<div id="newLocFlash" style="font-size:13px;color:var(--green);padding:6px 4px;font-weight:500;opacity:0;transition:opacity 0.3s">✓ New location created!</div>`;
   h += `<button class="settings-add-btn" onclick="addNewLocation()">＋ Add a location</button>`;
-  h += '<div class="settings-gap"></div>';
 
-  // ── Walking Distance ──
-  h += '<div class="section-label">Walking Distance</div><div class="settings-field">';
-  h += '<select class="settings-select" id="walkingRadiusSelect">';
+  // Walking distance inside location section (it affects route searching)
+  h += '<div style="height:16px"></div>';
+  h += '<div class="settings-section-header" style="padding-top:4px">Search Radius</div>';
+  h += '<div class="settings-card"><div class="settings-card-row">';
+  h += '<span class="settings-card-row-label">Walking distance</span>';
+  h += '<select class="settings-card-row-select" id="walkingRadiusSelect">';
   const radiusOptions = [
-    { val: 300, label: '300m (~4 min walk)' },
-    { val: 500, label: '500m (~6 min walk)' },
-    { val: 750, label: '750m (~10 min walk)' },
-    { val: 1000, label: '1 km (~13 min walk)' },
-    { val: 1500, label: '1.5 km (~19 min walk)' },
+    { val: 300, label: '300 m' }, { val: 500, label: '500 m' },
+    { val: 750, label: '750 m' }, { val: 1000, label: '1 km' }, { val: 1500, label: '1.5 km' },
   ];
   for (const opt of radiusOptions) {
     h += `<option value="${opt.val}" ${(config.walkingRadius || 500) === opt.val ? 'selected' : ''}>${esc(opt.label)}</option>`;
   }
-  h += '</select>';
-  h += `<div class="settings-note">Maximum distance to search for bus stops around both your origin and destination. A larger radius finds more routes but means longer walks.</div>`;
-  h += '</div><div class="settings-gap"></div>';
+  h += '</select></div></div>';
+  h += '<div class="settings-note" style="margin-bottom:0">Max radius around your origin and destination to search for bus stops.</div>';
 
-  // ── Weather ──
-  h += '<div class="section-label">Weather Location</div><div class="settings-field">';
+  // "More settings" toggle
+  h += `<button class="settings-more-btn" id="moreSettingsBtn" onclick="toggleAdvancedSettings()">More settings <span class="more-chevron">▾</span></button>`;
+  h += '</div>'; // end section 1
+
+  // ══ ADVANCED (collapsible) ══
+  h += '<div class="settings-advanced" id="advancedSettings">';
+
+  // ── SECTION 2: API Settings ──
+  h += '<div class="settings-section">';
+  h += '<div class="settings-section-header">API Settings</div>';
+
+  // API status cards
   const home = config.locations.find(l => l.id === 'loc_home');
-  if (home && home.lat != null) {
-    h += `<div class="settings-note" style="padding:0 0 8px">Using your Home location for weather. Change your Home address above to update.</div>`;
-  } else {
-    h += '<select class="settings-select" id="weatherLocSelect">';
+  const hasTflKey = !!config.tflKey;
+  const apis = [
+    { name: 'TfL Unified API', desc: 'Live bus arrivals and stop data', status: hasTflKey ? 'API key set' : 'Free (50 req/min)', statusClass: hasTflKey ? 'settings-api-status-key' : 'settings-api-status-free', url: 'https://api.tfl.gov.uk' },
+    { name: 'Photon / OpenStreetMap', desc: 'Address search and geocoding', status: 'Free', statusClass: 'settings-api-status-free', url: 'https://photon.komoot.io' },
+    { name: 'postcodes.io', desc: 'UK postcode lookup fallback', status: 'Free', statusClass: 'settings-api-status-free', url: 'https://postcodes.io' },
+    { name: 'Open-Meteo', desc: 'Weather forecasts', status: 'Free', statusClass: 'settings-api-status-free', url: 'https://open-meteo.com' },
+  ];
+  for (const api of apis) {
+    h += `<div class="settings-api-row">
+      <div class="settings-api-row-info">
+        <div class="settings-api-row-name">${esc(api.name)}</div>
+        <div class="settings-api-row-desc">${esc(api.desc)}</div>
+      </div>
+      <span class="settings-api-row-status ${api.statusClass}">${esc(api.status)}</span>
+    </div>`;
+  }
+
+  // TfL key input
+  h += '<div style="height:8px"></div>';
+  h += '<div class="settings-section-header" style="padding-top:4px">TfL API Key</div>';
+  h += `<div class="settings-field"><input type="text" class="settings-input" id="tflKeyInput" placeholder="Paste your free TfL API key" value="${attrEsc(config.tflKey)}">`;
+  h += `<div class="settings-note">Free from <a href="https://api-portal.tfl.gov.uk/" target="_blank">api-portal.tfl.gov.uk</a> — raises the rate limit from 50 to 500 req/min.</div></div>`;
+  h += '<button class="save-btn" id="saveKeyBtn" onclick="saveTflKey()">Save API Key</button>';
+
+  // Weather location (only if no Home set)
+  if (!(home && home.lat != null)) {
+    h += '<div style="height:16px"></div>';
+    h += '<div class="settings-section-header" style="padding-top:4px">Weather Location</div>';
+    h += '<div class="settings-card"><div class="settings-card-row">';
+    h += '<span class="settings-card-row-label">City</span>';
+    h += '<select class="settings-card-row-select" id="weatherLocSelect">';
     for (const loc of WEATHER_LOCATIONS) {
       h += `<option value="${attrEsc(loc.id)}" ${config.weatherLocation === loc.id ? 'selected' : ''}>${esc(loc.name)}</option>`;
     }
-    h += '</select>';
+    h += '</select></div></div>';
+    h += '<div class="settings-note" style="margin-bottom:0">Set your Home address to use it for weather automatically.</div>';
   }
-  h += '</div>';
+  h += '</div>'; // end section 2
 
-  // ── TfL key ──
-  h += '<div class="section-label">TfL API Key</div><div class="settings-field">';
-  h += `<input type="text" class="settings-input" id="tflKeyInput" placeholder="Paste your free TfL API key" value="${attrEsc(config.tflKey)}">`;
-  h += `<div class="settings-note">Free from <a href="https://api-portal.tfl.gov.uk/" target="_blank">api-portal.tfl.gov.uk</a> — raises rate limit from 50 to 500 req/min.</div>`;
-  h += '</div>';
-  h += '<button class="save-btn" id="saveKeyBtn" onclick="saveTflKey()">Save API Key</button>';
-  h += '<div class="settings-gap"></div>';
-
-  // ── App ──
-  h += '<div class="section-label">App</div>';
-  h += `<button class="save-btn" style="background:var(--bg-card);color:var(--blue);border:1px solid var(--separator)" onclick="checkForUpdates(true)">Check for Updates</button>`;
-  h += '<div class="settings-gap"></div>';
-
-  // ── Data ──
-  h += '<div class="section-label">Data</div>';
+  // ══ SECTION 3: App ══
+  h += '<div class="settings-section">';
+  h += '<div class="settings-section-header">App</div>';
+  h += `<button class="settings-link-btn" onclick="checkForUpdates(true)"><span>Check for Updates</span><span style="color:var(--text-tertiary)">›</span></button>`;
+  h += `<button class="settings-link-btn" onclick="window.open('https://github.com/quantum-jj/bus_app','_blank')"><span>Project GitHub</span><span style="color:var(--text-tertiary)">↗</span></button>`;
   h += '<button class="danger-btn" onclick="resetApp()">Reset All Settings & Locations</button>';
   h += `<div class="version-label">${APP_VERSION}</div>`;
+  h += '</div>'; // end section 3
+  h += '</div>'; // end advanced collapsible
 
   sc.innerHTML = h;
+  initLocDragDrop();
+  // Restore open state if it was open before re-render
+  if (window._settingsAdvancedOpen) {
+    const adv = document.getElementById('advancedSettings');
+    const btn = document.getElementById('moreSettingsBtn');
+    if (adv) adv.classList.add('open');
+    if (btn) btn.classList.add('open');
+  }
+}
+
+function toggleAdvancedSettings() {
+  const adv = document.getElementById('advancedSettings');
+  const btn = document.getElementById('moreSettingsBtn');
+  if (!adv || !btn) return;
+  const opening = !adv.classList.contains('open');
+  adv.classList.toggle('open', opening);
+  btn.classList.toggle('open', opening);
+  window._settingsAdvancedOpen = opening;
+}
+
+function initLocDragDrop() {
+  const list = document.getElementById('settingsLocList');
+  if (!list) return;
+  let dragged = null;
+
+  list.addEventListener('dragstart', e => {
+    const item = e.target.closest('.settings-loc-item');
+    if (!item) return;
+    dragged = item;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  list.addEventListener('dragend', e => {
+    if (dragged) dragged.classList.remove('dragging');
+    list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    dragged = null;
+  });
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const target = e.target.closest('.settings-loc-item');
+    if (!target || target === dragged) return;
+    list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+  });
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    const target = e.target.closest('.settings-loc-item');
+    if (!target || target === dragged || !dragged) return;
+    target.classList.remove('drag-over');
+    // Reorder in DOM
+    const items = [...list.children];
+    const fromIdx = items.indexOf(dragged);
+    const toIdx = items.indexOf(target);
+    if (fromIdx < toIdx) list.insertBefore(dragged, target.nextSibling);
+    else list.insertBefore(dragged, target);
+    // Sync config.locations order
+    const newOrder = [...list.querySelectorAll('[data-loc-id]')].map(el => el.dataset.locId);
+    config.locations.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+    saveConfig();
+  });
+
+  // Touch drag support (simple long-press → drag substitute using touch events)
+  let touchDragged = null, touchClone = null, touchOffsetX = 0, touchOffsetY = 0;
+  list.addEventListener('touchstart', e => {
+    const handle = e.target.closest('[data-drag-handle]');
+    if (!handle) return;
+    touchDragged = handle.closest('.settings-loc-item');
+    const rect = touchDragged.getBoundingClientRect();
+    touchOffsetX = e.touches[0].clientX - rect.left;
+    touchOffsetY = e.touches[0].clientY - rect.top;
+    touchClone = touchDragged.cloneNode(true);
+    touchClone.style.cssText = `position:fixed;z-index:9999;width:${rect.width}px;opacity:0.85;pointer-events:none;background:var(--bg-card-hover);border-radius:var(--radius);`;
+    document.body.appendChild(touchClone);
+    touchDragged.style.opacity = '0.3';
+  }, { passive: true });
+  list.addEventListener('touchmove', e => {
+    if (!touchDragged || !touchClone) return;
+    e.preventDefault();
+    const x = e.touches[0].clientX - touchOffsetX;
+    const y = e.touches[0].clientY - touchOffsetY;
+    touchClone.style.left = x + 'px';
+    touchClone.style.top = y + 'px';
+    // Find target under finger
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    touchClone.style.display = '';
+    const target = el?.closest('.settings-loc-item');
+    list.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    if (target && target !== touchDragged) target.classList.add('drag-over');
+  }, { passive: false });
+  list.addEventListener('touchend', e => {
+    if (!touchDragged) return;
+    touchClone?.remove(); touchClone = null;
+    touchDragged.style.opacity = '';
+    const target = list.querySelector('.drag-over');
+    if (target) {
+      target.classList.remove('drag-over');
+      const items = [...list.children];
+      const fromIdx = items.indexOf(touchDragged);
+      const toIdx = items.indexOf(target);
+      if (fromIdx < toIdx) list.insertBefore(touchDragged, target.nextSibling);
+      else list.insertBefore(touchDragged, target);
+      const newOrder = [...list.querySelectorAll('[data-loc-id]')].map(el => el.dataset.locId);
+      config.locations.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+      saveConfig();
+    }
+    touchDragged = null;
+  }, { passive: true });
 }
 
 // Settings event delegation
 document.getElementById('settingsContainer').addEventListener('click', e => {
+  // Don't open editor when tapping drag handle
+  if (e.target.closest('[data-drag-handle]')) return;
   const locItem = e.target.closest('[data-edit-loc]');
   if (locItem) { openLocationEditor(locItem.dataset.editLoc); return; }
 });
@@ -1314,9 +1489,18 @@ let _editingLocId = null;
 
 function addNewLocation() {
   const id = 'loc_' + Date.now();
-  config.locations.push({ id, name: 'New Location', lat: null, lon: null, address: '', emoji: '' });
+  config.locations.push({ id, name: 'New Location', lat: null, lon: null, address: '', emoji: '⭐' });
   saveConfig();
-  openLocationEditor(id);
+  // Show brief flash before navigating
+  const flash = document.getElementById('newLocFlash');
+  if (flash) {
+    flash.style.height = 'auto';
+    flash.classList.add ? (flash.style.opacity = '1') : null;
+    flash.style.opacity = '1';
+    setTimeout(() => { openLocationEditor(id); }, 600);
+  } else {
+    openLocationEditor(id);
+  }
 }
 
 function openLocationEditor(locId) {
@@ -1334,16 +1518,33 @@ function renderLocationEditor(locId) {
   if (!loc) return;
   const sc = document.getElementById('locationEditorContainer');
 
+  // Determine displayed emoji — use stored emoji, or default for home/work
+  const defaultEmoji = loc.id === 'loc_home' ? '🏠' : loc.id === 'loc_work' ? '💼' : '⭐';
+  const displayEmoji = loc.emoji || defaultEmoji;
+  // If no emoji stored yet for home/work, persist the default now
+  if (!loc.emoji && (loc.id === 'loc_home' || loc.id === 'loc_work')) {
+    loc.emoji = defaultEmoji;
+    saveConfig();
+  }
+
+  const COMMON_EMOJI = ['🏠','💼','🏋️','🛒','☕','🍽️','🏥','🏫','🏦','🎭','🎓','🏟️','🌳','🏖️','🚉','✈️','🏨','❤️','⭐','📍'];
+
   let h = '';
 
   // Name + Emoji row
   h += '<div class="loc-editor-section">';
   h += '<div class="loc-editor-label">Name & Icon</div>';
-  h += '<div class="emoji-input-row">';
-  h += `<input type="text" class="emoji-input" id="locEditorEmoji" value="${attrEsc(loc.emoji || '')}" maxlength="10" placeholder="📍">`;
+  h += '<div class="emoji-input-row" id="emojiInputRow">';
+  h += `<div style="position:relative;flex-shrink:0">`;
+  h += `<input type="text" class="emoji-input" id="locEditorEmoji" value="${attrEsc(displayEmoji)}" maxlength="10" placeholder="📍" readonly>`;
+  h += `<div class="emoji-dropdown hidden" id="emojiDropdown">`;
+  for (const em of COMMON_EMOJI) {
+    h += `<span class="emoji-option" data-emoji="${attrEsc(em)}">${em}</span>`;
+  }
+  h += `</div></div>`;
   h += `<input type="text" class="settings-input" id="locEditorName" value="${attrEsc(loc.name)}" maxlength="30" placeholder="e.g. Home, Office, Gym" style="flex:1">`;
   h += '</div>';
-  h += `<div class="settings-note">Tap the icon box to type a custom emoji.</div>`;
+  h += `<div class="settings-note">Tap the icon to pick an emoji.</div>`;
   h += '</div>';
 
   // Current address
@@ -1367,60 +1568,76 @@ function renderLocationEditor(locId) {
 
   sc.innerHTML = h;
 
-  // Helper: show temporal flash with a custom message
+  // Helper: show temporal flash
   function showEditorFlash(msg) {
     const flash = document.getElementById('locEditorFlash');
     if (!flash) return;
     flash.textContent = '✓ ' + msg;
     flash.classList.remove('show');
-    void flash.offsetWidth; // force reflow for re-trigger
+    void flash.offsetWidth;
     flash.classList.add('show');
     clearTimeout(flash._timer);
     flash._timer = setTimeout(() => flash.classList.remove('show'), 2000);
   }
 
-  // Helper: test if a string is a single emoji (including compound emoji like flags, skin tones)
+  // Helper: test if a string is a single emoji
   function isSingleEmoji(str) {
-    if (!str) return true; // empty is fine
-    const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)(\u200D(\p{Emoji_Presentation}|\p{Emoji}\uFE0F))*$/u;
-    // Also allow emoji with skin tone modifiers and flags
+    if (!str) return true;
     const segments = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(str)];
     if (segments.length !== 1) return false;
     const char = segments[0].segment;
     return /\p{Emoji_Presentation}/u.test(char) || /\p{Emoji}\uFE0F/u.test(char);
   }
 
-  // Helper: strip emoji characters from a string (for name input)
+  // Helper: strip emoji from name string
   function stripEmoji(str) {
     return str.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F\u200D\u20E3\uFE0F]/gu, '').trim();
   }
 
-  // Auto-save name on blur — strip any emoji from name
+  // Emoji dropdown
+  const emojiInput = document.getElementById('locEditorEmoji');
+  const emojiDropdown = document.getElementById('emojiDropdown');
+
+  function closeEmojiDropdown() { emojiDropdown.classList.add('hidden'); }
+
+  emojiInput.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = !emojiDropdown.classList.contains('hidden');
+    if (isOpen) { closeEmojiDropdown(); return; }
+    emojiDropdown.classList.remove('hidden');
+    // Single capture-phase listener on document to close on any outside tap
+    setTimeout(() => {
+      document.addEventListener('click', function handler(ev) {
+        if (!emojiDropdown.contains(ev.target)) { closeEmojiDropdown(); }
+        document.removeEventListener('click', handler);
+      }, { capture: true, once: true });
+    }, 0);
+  });
+  emojiDropdown.addEventListener('click', e => {
+    const opt = e.target.closest('[data-emoji]');
+    if (!opt) return;
+    const chosen = opt.dataset.emoji;
+    emojiInput.value = chosen;
+    loc.emoji = chosen;
+    saveConfig();
+    showEditorFlash('Icon saved');
+    closeEmojiDropdown();
+  });
+
+  // Name: save on both blur AND Enter key for responsiveness
   const nameInput = document.getElementById('locEditorName');
-  nameInput.addEventListener('blur', () => {
+  function saveName() {
     let name = stripEmoji((nameInput.value || '').trim());
-    nameInput.value = name; // visual feedback of stripping
+    nameInput.value = name;
     if (name && name !== loc.name) {
       loc.name = name;
       saveConfig();
       document.getElementById('navTitle').textContent = name;
       showEditorFlash('Name saved');
     }
-  });
-
-  // Auto-save emoji on input — validate single emoji only
-  const emojiInput = document.getElementById('locEditorEmoji');
-  emojiInput.addEventListener('input', () => {
-    const val = emojiInput.value.trim();
-    if (val && !isSingleEmoji(val)) {
-      // Not a valid single emoji — revert to last good value
-      emojiInput.value = loc.emoji || '';
-      return;
-    }
-    loc.emoji = val;
-    saveConfig();
-    if (val) showEditorFlash('Icon saved');
-  });
+  }
+  nameInput.addEventListener('blur', saveName);
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); } });
 
   // Wire up Photon search
   const searchInput = document.getElementById('locEditorSearch');
@@ -1431,14 +1648,12 @@ function renderLocationEditor(locId) {
     loc.address = r.address || r.name;
     saveConfig();
     showEditorFlash('Address updated');
-    // Update the current address display
     const currentEl = sc.querySelector('.loc-editor-current');
     if (currentEl) {
       currentEl.style.color = '';
       currentEl.textContent = '📍 ' + (loc.address || `${loc.lat.toFixed(5)}, ${loc.lon.toFixed(5)}`);
     }
     searchInput.value = '';
-    // Refresh weather if Home changed
     if (loc.id === 'loc_home') loadWeather();
   });
 }
