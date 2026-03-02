@@ -96,20 +96,29 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 .route-picker-search-btn .btn-spinner { display:none; width:20px; height:20px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
 .route-picker-search-btn.searching .btn-icon { display:none; }
 .route-picker-search-btn.searching .btn-spinner { display:block; }
+.no-locations-notice { display:none; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:20px 16px; background:var(--bg-card); border-radius:var(--radius); border:1px dashed var(--separator); margin-bottom:16px; }
+.no-locations-notice.visible { display:flex; }
+.no-locations-notice-text { font-size:14px; color:var(--text-secondary); line-height:1.4; }
+.no-locations-notice-btn { padding:10px 20px; background:var(--blue); color:white; border:none; border-radius:10px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; }
+.no-locations-notice-btn:active { opacity:0.8; }
 
 /* ── Location Picker Modal ── */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; padding:0 0 20px; }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none; align-items:flex-end; justify-content:center; padding:0; }
 .modal-overlay.active { display:flex; }
-.modal-sheet { width:100%; max-width:500px; max-height:85vh; background:#1c1c1e; border-radius:16px; display:flex; flex-direction:column; padding-bottom:var(--safe-bottom); }
-.modal-header { padding:16px; border-bottom:0.5px solid var(--separator); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.modal-sheet { width:100%; max-width:500px; max-height:85vh; background:#1c1c1e; border-radius:16px 16px 0 0; display:flex; flex-direction:column; padding-bottom:var(--safe-bottom); transition:max-height 0.2s ease; }
+/* When keyboard is open, sheet fills from safe-top down so search bar is always visible */
+.modal-sheet.keyboard-open { border-radius:0; max-height:100vh; }
+.modal-header { padding:14px 16px; border-bottom:0.5px solid var(--separator); display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
+.modal-header-row { display:flex; justify-content:space-between; align-items:center; }
 .modal-header h3 { font-size:17px; font-weight:600; }
 .modal-close { background:none; border:none; color:var(--blue); font-size:17px; font-family:inherit; cursor:pointer; }
-.modal-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px; }
-.modal-search-wrap { position:relative; margin-bottom:12px; }
+/* Search is pinned inside the header, never scrolls away */
+.modal-search-wrap { position:relative; }
 .modal-search-input { width:100%; padding:10px 14px 10px 36px; background:var(--bg); border:1px solid var(--separator); border-radius:10px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; }
 .modal-search-input:focus { border-color:var(--blue); }
 .modal-search-input::placeholder { color:var(--text-tertiary); }
 .modal-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:15px; color:var(--text-tertiary); pointer-events:none; }
+.modal-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 16px; }
 .modal-section-label { font-size:12px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.03em; padding:8px 0 6px; }
 
 /* ── Location Picker Items ── */
@@ -343,6 +352,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
       </div>
     </div>
 
+    <div class="no-locations-notice" id="noLocationsNotice">
+      <div style="font-size:32px">📍</div>
+      <div class="no-locations-notice-text">Save your favourite locations — like Home or Work — to quickly look up bus routes between them.</div>
+      <button class="no-locations-notice-btn" onclick="showSettings()">Set up locations →</button>
+    </div>
     <div id="routeResults"></div>
   </div>
 
@@ -359,17 +373,24 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Tex
 
 <!-- Location Picker Modal -->
 <div class="modal-overlay" id="locPickerModal">
-  <div class="modal-sheet">
+  <div class="modal-sheet" id="locPickerSheet">
     <div class="modal-header">
-      <h3 id="locPickerTitle">Select Location</h3>
-      <button class="modal-close" onclick="closeLocPicker()">Cancel</button>
+      <div class="modal-header-row">
+        <h3 id="locPickerTitle">Select Location</h3>
+        <button class="modal-close" onclick="closeLocPicker()">Cancel</button>
+      </div>
+      <!-- Search bar lives in the header so the keyboard never pushes it off screen -->
+      <div class="modal-search-wrap">
+        <span class="modal-search-icon">🔍</span>
+        <input class="modal-search-input" id="pickerSearchInput" placeholder="Search address or postcode" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
     </div>
     <div class="modal-body" id="locPickerBody"></div>
   </div>
 </div>
 
 <script>
-const APP_VERSION = 'v2.5.0';
+const APP_VERSION = 'v2.6.0';
 const DATA_VERSION = 1;
 
 // ─── DEFAULTS ───────────────────────────────────────────────
@@ -731,12 +752,22 @@ function openLocationPicker(mode) {
   _pickerMode = mode;
   const title = mode === 'from' ? 'Select Origin' : 'Select Destination';
   document.getElementById('locPickerTitle').textContent = title;
+  // Reset keyboard state
+  document.getElementById('locPickerSheet').classList.remove('keyboard-open');
   renderLocPickerBody();
   document.getElementById('locPickerModal').classList.add('active');
+  // Focus the search input after a short delay so the sheet animates in first
+  setTimeout(() => {
+    const inp = document.getElementById('pickerSearchInput');
+    if (inp) inp.focus();
+  }, 120);
 }
 
 function closeLocPicker() {
   document.getElementById('locPickerModal').classList.remove('active');
+  document.getElementById('locPickerSheet').classList.remove('keyboard-open');
+  // Blur any focused input to dismiss keyboard
+  if (document.activeElement) document.activeElement.blur();
   _pickerMode = null;
 }
 
@@ -747,11 +778,7 @@ function renderLocPickerBody() {
 
   let h = '';
 
-  // Search box for ad-hoc
-  h += `<div class="modal-search-wrap">
-    <span class="modal-search-icon">🔍</span>
-    <input class="modal-search-input" id="pickerSearchInput" placeholder="Search address or postcode" autocomplete="off" autocorrect="off" spellcheck="false">
-  </div>`;
+  // Photon results land here; the search input itself lives in the modal header
   h += `<div class="photon-results" id="pickerPhotonResults"></div>`;
 
   // Current location
@@ -800,12 +827,44 @@ function renderLocPickerBody() {
 
   body.innerHTML = h;
 
-  // Wire up search
+  // Wire up search (input is in the header, results land in the body)
   const searchInput = document.getElementById('pickerSearchInput');
   const photonResults = document.getElementById('pickerPhotonResults');
   setupPhotonInput(searchInput, photonResults, r => {
     pickLocation({ name: r.name, lat: r.lat, lon: r.lon, isAdhoc: true, address: r.address });
   });
+
+  // Keyboard-open detection: when the visual viewport shrinks significantly,
+  // the software keyboard is open. Switch the sheet to full-height mode so
+  // the header+search bar is always anchored at the top of the visible area.
+  const sheet = document.getElementById('locPickerSheet');
+  function handleViewportResize() {
+    if (!document.getElementById('locPickerModal')?.classList.contains('active')) return;
+    const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const fullHeight = window.screen.height;
+    // Keyboard is open when visual viewport is >25% shorter than screen height
+    const keyboardOpen = vvHeight < fullHeight * 0.75;
+    sheet.classList.toggle('keyboard-open', keyboardOpen);
+    // Shift the overlay to sit at the top of the visual viewport
+    if (window.visualViewport && keyboardOpen) {
+      sheet.style.marginBottom = '0';
+      sheet.style.maxHeight = Math.round(vvHeight - 8) + 'px';
+    } else {
+      sheet.style.maxHeight = '';
+    }
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleViewportResize);
+    // Clean up when modal closes
+    const observer = new MutationObserver(() => {
+      if (!document.getElementById('locPickerModal')?.classList.contains('active')) {
+        window.visualViewport.removeEventListener('resize', handleViewportResize);
+        observer.disconnect();
+        sheet.style.maxHeight = '';
+      }
+    });
+    observer.observe(document.getElementById('locPickerModal'), { attributes: true, attributeFilter: ['class'] });
+  }
 
   // Wire up current location
   document.getElementById('pickerCurrentLoc').addEventListener('click', () => {
@@ -893,6 +952,13 @@ function updatePickerButtons() {
   }
 
   document.getElementById('lookupBtn').disabled = !(_fromSelection && _toSelection);
+
+  // Show the no-locations notice when no saved locations have addresses
+  const notice = document.getElementById('noLocationsNotice');
+  if (notice) {
+    const hasConfigured = config.locations.some(l => l.lat != null);
+    notice.classList.toggle('visible', !hasConfigured);
+  }
 }
 
 // Close picker on backdrop tap
